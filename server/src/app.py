@@ -1,16 +1,27 @@
 import uuid
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from .utils.file_handler import JsonFileHandler
 import os
 import sys
 
+current_dir = os.path.dirname(os.path.abspath(__file__))  # => server/src
+server_dir = os.path.dirname(current_dir)  # => server
+
+# 确保能找到 server/src 下的 utils
+sys.path.append(current_dir)
+# 确保能找到 server/config.py
+sys.path.append(server_dir)
+
+from flask import Flask, jsonify, request, send_from_directory
+from flask_cors import CORS
+from utils.file_handler import JsonFileHandler
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import config
 
 # 实例化应用
-app = Flask(__name__)
-app.config.from_object(config["development"])
+app = Flask(
+    __name__,
+    static_folder="static",  # 前端静态文件所在文件夹名称
+    static_url_path="",  # 设置成 '' 使得访问静态文件时的URL是根路径
+)
 
 # 启用 CORS
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -60,6 +71,16 @@ def single_book(book_id):
         file_handler.remove_book(book_id)
         response_object["message"] = "Book removed!"
     return jsonify(response_object)
+
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_frontend(path):
+    # 如果请求的路径在静态文件夹中（static/...）存在，就直接返回该文件
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    # 否则返回index.html，让Vue前端去处理路由
+    return send_from_directory(app.static_folder, "index.html")
 
 
 if __name__ == "__main__":

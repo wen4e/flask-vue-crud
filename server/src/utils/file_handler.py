@@ -3,7 +3,7 @@ import os
 
 
 class JsonFileHandler:
-    def __init__(self, file_path="src/data/books.json"):
+    def __init__(self, file_path="data/books.json"):
         self.file_path = file_path
         self._ensure_file_exists()
         self._init_default_data()
