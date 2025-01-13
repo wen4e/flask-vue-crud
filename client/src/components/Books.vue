@@ -1,46 +1,22 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col-sm-10">
-        <h1>Books</h1>
-        <hr />
-        <br /><br />
-        <alert :message="message" v-if="showMessage"></alert>
-        <el-button type="primary" @click="toggleAddBookModal">Add Book</el-button>
-        <el-upload ref="upload" class="upload-demo" action="http://localhost:5001/upload/excel" :file-list="fileList" :on-success="handleSuccess" :on-error="handleError" :before-upload="beforeUpload" :on-exceed="handleExceed" :limit="1" accept=".xlsx,.xls">
-          <el-button type="primary">上传Excel文件</el-button>
-          <template #tip>
-            <div class="el-upload__tip">请上传 xlsx 或 xls 格式的Excel文件</div>
+      <el-upload ref="upload" class="upload-demo" action="http://localhost:5001/upload/excel" :file-list="fileList" :on-success="handleSuccess" :on-error="handleError" :before-upload="beforeUpload" :on-exceed="handleExceed" :limit="1" accept=".xlsx,.xls">
+        <el-button type="primary">上传Excel文件</el-button>
+        <template #tip>
+          <div class="el-upload__tip">请上传 xlsx 或 xls 格式的Excel文件</div>
+        </template>
+      </el-upload>
+      <el-table :data="trData" style="width: 100%">
+        <el-table-column prop="trName" label="交易名称" />
+        <el-table-column prop="trCode" label="交易码" />
+        <el-table-column label="操作">
+          <template #default>
+            <el-button link type="primary" size="small" @click="handleClick"> Detail </el-button>
+            <el-button link type="primary" size="small">Edit</el-button>
           </template>
-        </el-upload>
-        <br /><br />
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Author</th>
-              <th scope="col">Read?</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(book, index) in books" :key="index">
-              <td>{{ book.title }}</td>
-              <td>{{ book.author }}</td>
-              <td>
-                <span v-if="book.read">Yes</span>
-                <span v-else>No</span>
-              </td>
-              <td>
-                <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-warning btn-sm" @click="toggleEditBookModal(book)">Update</button>
-                  <button type="button" class="btn btn-danger btn-sm" @click="handleDeleteBook(book)">Delete</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        </el-table-column>
+      </el-table>
     </div>
 
     <!-- add new book modal -->
@@ -125,6 +101,7 @@ export default {
       activeAddBookModal: false,
       activeEditBookModal: false,
       fileList: [], // 添加文件列表数据
+      trData: [],
       addBookForm: {
         title: "",
         author: "",
@@ -193,6 +170,17 @@ export default {
         .catch((error) => {
           console.log(error);
           this.getBooks();
+        });
+    },
+    getTrCode() {
+      const path = "http://localhost:5001/trCode";
+      axios
+        .get(path)
+        .then((res) => {
+          this.trData = res.data.data;
+        })
+        .catch((error) => {
+          console.error(error);
         });
     },
     getBooks() {
@@ -265,15 +253,7 @@ export default {
           this.getBooks();
         });
     },
-    toggleAddBookModal() {
-      const body = document.querySelector("body");
-      this.activeAddBookModal = !this.activeAddBookModal;
-      if (this.activeAddBookModal) {
-        body.classList.add("modal-open");
-      } else {
-        body.classList.remove("modal-open");
-      }
-    },
+
     toggleEditBookModal(book) {
       if (book) {
         this.editBookForm = book;
@@ -302,7 +282,7 @@ export default {
     },
   },
   created() {
-    this.getBooks();
+    this.getTrCode();
   },
 };
 </script>

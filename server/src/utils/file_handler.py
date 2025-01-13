@@ -1,8 +1,6 @@
 import json
 import os
 import pandas as pd
-import random
-import string
 
 
 # 处理excel文件
@@ -85,75 +83,19 @@ class ExcelHandler:
             return {"success": False, "error": str(e)}
 
 
-# 处理json文件
-class JsonFileHandler:
-    def __init__(self, file_path="data/books.json"):
-        self.file_path = file_path
-        self._ensure_file_exists()
-        self._init_default_data()
+# 获取data文件夹下的tr.json文件
+class TrCodeHandler:
+    def __init__(self):
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.file_path = os.path.join(current_dir, "data", "tr.json")
 
-    def _init_default_data(self):
-        """初始化默认数据"""
-        if os.path.getsize(self.file_path) == 0:
-            default_books = [
-                {
-                    "id": "1",
-                    "title": "On the Road",
-                    "author": "Jack Kerouac",
-                    "read": True,
-                },
-                {
-                    "id": "2",
-                    "title": "Harry Potter",
-                    "author": "J. K. Rowling",
-                    "read": False,
-                },
-            ]
-            self.write_books(default_books)
-
-    def _ensure_file_exists(self):
-        """确保 JSON 文件存在，如果不存在则创建"""
-        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+    def read_tr_codes(self):
+        """读取所有交易码"""
         if not os.path.exists(self.file_path):
-            with open(self.file_path, "w") as f:
-                json.dump([], f)
+            return []
 
-    def read_books(self):
-        """读取所有图书"""
         try:
             with open(self.file_path, "r") as f:
                 return json.load(f)
-        except Exception as e:
-            print(f"读取文件错误: {str(e)}")
+        except Exception:
             return []
-
-    def write_books(self, books):
-        """写入所有图书"""
-        try:
-            with open(self.file_path, "w") as f:
-                json.dump(books, f, indent=4)
-            return True
-        except Exception as e:
-            print(f"写入文件错误: {str(e)}")
-            return False
-
-    def add_book(self, book):
-        """添加单本图书"""
-        books = self.read_books()
-        books.append(book)
-        return self.write_books(books)
-
-    def remove_book(self, book_id):
-        """删除指定图书"""
-        books = self.read_books()
-        books = [book for book in books if book["id"] != book_id]
-        return self.write_books(books)
-
-    def update_book(self, book_id, updated_book):
-        """更新指定图书"""
-        books = self.read_books()
-        for i, book in enumerate(books):
-            if book["id"] == book_id:
-                books[i] = updated_book
-                return self.write_books(books)
-        return False
