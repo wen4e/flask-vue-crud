@@ -1,7 +1,30 @@
 import json
 import os
+import pandas as pd
 
 
+# 处理excel文件
+class ExcelHandler:
+    ALLOWED_EXTENSIONS = {"xlsx", "xls"}
+
+    @staticmethod
+    def allowed_file(filename):
+        return (
+            "." in filename
+            and filename.rsplit(".", 1)[1].lower() in ExcelHandler.ALLOWED_EXTENSIONS
+        )
+
+    @staticmethod
+    def read_excel(file_path):
+        """读取Excel文件并返回数据"""
+        try:
+            df = pd.read_excel(file_path)
+            return {"success": True, "data": df.to_dict("records")}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+
+# 处理json文件
 class JsonFileHandler:
     def __init__(self, file_path="data/books.json"):
         self.file_path = file_path

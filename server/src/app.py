@@ -1,6 +1,8 @@
 import uuid
 import os
 import sys
+from werkzeug.utils import secure_filename
+
 
 current_dir = os.path.dirname(os.path.abspath(__file__))  # => server/src
 server_dir = os.path.dirname(current_dir)  # => server
@@ -12,7 +14,7 @@ sys.path.append(server_dir)
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from utils.file_handler import JsonFileHandler
+from utils.file_handler import JsonFileHandler, ExcelHandler
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -36,6 +38,49 @@ def ping_pong():
     return jsonify("pong!")
 
 
+# 添加文件上传配置
+UPLOAD_FOLDER = os.path.join(current_dir, "uploads")
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
+@app.route("/upload/excel", methods=["POST"])
+def upload_excel():
+    if "file" not in request.files:
+        return jsonify({"error": "没有文件部分"}), 400
+
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "没有选择文件"}), 400
+
+    if file and ExcelHandler.allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        unique_filename = f"{str(uuid.uuid4())}_{filename}"
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
+
+        try:
+            file.save(filepath)
+            result = ExcelHandler.read_excel(filepath)
+
+            # 清理临时文件
+            os.remove(filepath)
+
+            if result["success"]:
+                return jsonify({"message": "文件上传成功", "data": result["data"]})
+            else:
+                return jsonify({"error": result["error"]}), 500
+
+        except Exception as e:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            return jsonify({"error": f"处理文件时出错: {str(e)}"}), 500
+
+    return jsonify({"error": "不允许的文件类型"}), 400
+
+
+# 书籍路由
 @app.route("/books", methods=["GET", "POST"])
 def all_books():
     response_object = {"status": "success"}
@@ -54,6 +99,7 @@ def all_books():
     return jsonify(response_object)
 
 
+# 单个书籍路由
 @app.route("/books/<book_id>", methods=["PUT", "DELETE"])
 def single_book(book_id):
     response_object = {"status": "success"}
