@@ -6,3 +6,4 @@ __pycache__
 /server/dist
 /server/build
 /server/src/static
+/server/src/data
