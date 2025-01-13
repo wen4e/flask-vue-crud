@@ -1,0 +1,742 @@
+[
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": "顺序号",
+    "Unnamed: 3": "元素名称",
+    "Unnamed: 4": "中文说明",
+    "Unnamed: 5": "数据类型",
+    "Unnamed: 6": "出现类型",
+    "Unnamed: 7": "备注"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "PageRequest",
+    "Unnamed: 1": "TbspRequest",
+    "Unnamed: 2": 1,
+    "Unnamed: 3": "headTenantId",
+    "Unnamed: 4": "租户号",
+    "Unnamed: 5": "String(3)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 2,
+    "Unnamed: 3": "headChannel",
+    "Unnamed: 4": "渠道标识",
+    "Unnamed: 5": "String(2)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 3,
+    "Unnamed: 3": "headOrgNo",
+    "Unnamed: 4": "机构号",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 4,
+    "Unnamed: 3": "headCustNo",
+    "Unnamed: 4": "客户号",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 5,
+    "Unnamed: 3": "headUserNo",
+    "Unnamed: 4": "用户号",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 6,
+    "Unnamed: 3": "headTrCode",
+    "Unnamed: 4": "交易码",
+    "Unnamed: 5": "String(16)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 7,
+    "Unnamed: 3": "headTrDate",
+    "Unnamed: 4": "交易日期",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "yyyyMMdd"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 8,
+    "Unnamed: 3": "headTrTime",
+    "Unnamed: 4": "交易时间",
+    "Unnamed: 5": "String(6)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "HHmmss"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 9,
+    "Unnamed: 3": "headSerialNo",
+    "Unnamed: 4": "交易流水",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 10,
+    "Unnamed: 3": "headReqDate",
+    "Unnamed: 4": "请求日期",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "yyyyMMdd"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 11,
+    "Unnamed: 3": "headReqTime",
+    "Unnamed: 4": "请求时间",
+    "Unnamed: 5": "String(6)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "HHmmss"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 12,
+    "Unnamed: 3": "headReqSerialNo",
+    "Unnamed: 4": "请求流水",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 13,
+    "Unnamed: 3": "headOrigDate",
+    "Unnamed: 4": "原始方日期",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "yyyyMMdd"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 14,
+    "Unnamed: 3": "headOrigTime",
+    "Unnamed: 4": "原始方时间",
+    "Unnamed: 5": "String(6)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "HHmmss"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 15,
+    "Unnamed: 3": "headOrigSerialNo",
+    "Unnamed: 4": "原始方流水",
+    "Unnamed: 5": "String(128)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 16,
+    "Unnamed: 3": "ip",
+    "Unnamed: 4": "IP地址",
+    "Unnamed: 5": "String(128)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 17,
+    "Unnamed: 3": "mac",
+    "Unnamed: 4": "MAC",
+    "Unnamed: 5": "String(128)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 18,
+    "Unnamed: 3": "language",
+    "Unnamed: 4": "语言",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "预留"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 19,
+    "Unnamed: 3": "headExtField",
+    "Unnamed: 4": "扩展字段",
+    "Unnamed: 5": "String(1024)",
+    "Unnamed: 6": "N",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 20,
+    "Unnamed: 3": "pager",
+    "Unnamed: 4": "分页标识",
+    "Unnamed: 5": "boolean",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": "true（默认）：分页，false：不分页"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 21,
+    "Unnamed: 3": "start",
+    "Unnamed: 4": "起始序号",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认1"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 22,
+    "Unnamed: 3": "size",
+    "Unnamed: 4": "查询条数",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认10"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 23,
+    "Unnamed: 3": "order",
+    "Unnamed: 4": "排序字段",
+    "Unnamed: 5": "String(256)",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "公共报文头出参：TbspResponse/PageResponse",
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": NaN,
+    "Unnamed: 3": NaN,
+    "Unnamed: 4": NaN,
+    "Unnamed: 5": NaN,
+    "Unnamed: 6": NaN,
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": "顺序号",
+    "Unnamed: 3": "元素名称",
+    "Unnamed: 4": "中文说明",
+    "Unnamed: 5": "数据类型",
+    "Unnamed: 6": "出现类型",
+    "Unnamed: 7": "备注"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "PageResponse",
+    "Unnamed: 1": "TbspResponse",
+    "Unnamed: 2": 1,
+    "Unnamed: 3": "headTenantId",
+    "Unnamed: 4": "租户号",
+    "Unnamed: 5": "String(3)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 2,
+    "Unnamed: 3": "headChannel",
+    "Unnamed: 4": "渠道标识",
+    "Unnamed: 5": "String(2)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 3,
+    "Unnamed: 3": "headOrgNo",
+    "Unnamed: 4": "机构号",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 4,
+    "Unnamed: 3": "headCustNo",
+    "Unnamed: 4": "客户号",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 5,
+    "Unnamed: 3": "headUserNo",
+    "Unnamed: 4": "用户号",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 6,
+    "Unnamed: 3": "headTrCode",
+    "Unnamed: 4": "交易码",
+    "Unnamed: 5": "String(16)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 7,
+    "Unnamed: 3": "headTrDate",
+    "Unnamed: 4": "交易日期",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "yyyyMMdd"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 8,
+    "Unnamed: 3": "headTrTime",
+    "Unnamed: 4": "交易时间",
+    "Unnamed: 5": "String(6)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "HHmmss"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 9,
+    "Unnamed: 3": "headSerialNo",
+    "Unnamed: 4": "交易流水",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "企业不需要赋值"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 10,
+    "Unnamed: 3": "headReqDate",
+    "Unnamed: 4": "请求日期",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "yyyyMMdd"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 11,
+    "Unnamed: 3": "headReqTime",
+    "Unnamed: 4": "请求时间",
+    "Unnamed: 5": "String(6)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "HHmmss"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 12,
+    "Unnamed: 3": "headReqSerialNo",
+    "Unnamed: 4": "请求流水",
+    "Unnamed: 5": "String(64)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 13,
+    "Unnamed: 3": "headOrigDate",
+    "Unnamed: 4": "原始方日期",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "yyyyMMdd"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 14,
+    "Unnamed: 3": "headOrigTime",
+    "Unnamed: 4": "原始方时间",
+    "Unnamed: 5": "String(6)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "HHmmss"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 15,
+    "Unnamed: 3": "headOrigSerialNo",
+    "Unnamed: 4": "原始方流水",
+    "Unnamed: 5": "String(64)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 16,
+    "Unnamed: 3": "ip",
+    "Unnamed: 4": "IP地址",
+    "Unnamed: 5": "String(64)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 17,
+    "Unnamed: 3": "mac",
+    "Unnamed: 4": "MAC",
+    "Unnamed: 5": "String(64)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 18,
+    "Unnamed: 3": "language",
+    "Unnamed: 4": "语言",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "预留"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 19,
+    "Unnamed: 3": "respType",
+    "Unnamed: 4": "返回类型",
+    "Unnamed: 5": "String(1)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "TradeStatusEnum:\n    SUCCESS(\"S\", \"成功\"),\n    FAIL(\"F\", \"失败\"),\n    PROCESS(\"P\", \"处理中\"),\n    ACCEPT(\"A\", \"已接收\"),\n    UNKNOWN(\"U\", \"未知\"),\n    WORKFLOW(\"W\", \"工单\");"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 20,
+    "Unnamed: 3": "respCode",
+    "Unnamed: 4": "返回编码",
+    "Unnamed: 5": "String(16)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 21,
+    "Unnamed: 3": "respMsg",
+    "Unnamed: 4": "返回信息",
+    "Unnamed: 5": "String(256)",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 22,
+    "Unnamed: 3": "respExt",
+    "Unnamed: 4": "扩展信息",
+    "Unnamed: 5": "String(1024)",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 23,
+    "Unnamed: 3": "total",
+    "Unnamed: 4": "总记录数",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页查询总记录数"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 24,
+    "Unnamed: 3": "start",
+    "Unnamed: 4": "起始序号",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认1"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 25,
+    "Unnamed: 3": "size",
+    "Unnamed: 4": "查询条数",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认10"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": NaN,
+    "Unnamed: 3": NaN,
+    "Unnamed: 4": NaN,
+    "Unnamed: 5": NaN,
+    "Unnamed: 6": NaN,
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "公共报文头入参：BizRequest/PageBizRequest",
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": NaN,
+    "Unnamed: 3": NaN,
+    "Unnamed: 4": NaN,
+    "Unnamed: 5": NaN,
+    "Unnamed: 6": NaN,
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": "顺序号",
+    "Unnamed: 3": "元素名称",
+    "Unnamed: 4": "中文说明",
+    "Unnamed: 5": "数据类型",
+    "Unnamed: 6": "出现类型",
+    "Unnamed: 7": "备注"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "BizPageRequest",
+    "Unnamed: 1": "BizRequest",
+    "Unnamed: 2": 1,
+    "Unnamed: 3": "headSerialNo",
+    "Unnamed: 4": "交易流水",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 2,
+    "Unnamed: 3": "workflowFlag",
+    "Unnamed: 4": "审批标志",
+    "Unnamed: 5": "String(8)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "G00008：0-否 1-是"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 3,
+    "Unnamed: 3": "origSerialNo",
+    "Unnamed: 4": "原始方流水",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 4,
+    "Unnamed: 3": "pager",
+    "Unnamed: 4": "分页标识",
+    "Unnamed: 5": "Boolean",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": "true（默认）：分页，false：不分页"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 5,
+    "Unnamed: 3": "start",
+    "Unnamed: 4": "起始序号",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认1"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 6,
+    "Unnamed: 3": "size",
+    "Unnamed: 4": "查询条数",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认10"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 7,
+    "Unnamed: 3": "order",
+    "Unnamed: 4": "排序字段",
+    "Unnamed: 5": "String",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "公共报文头出参：BizReponse/PageBizResponse",
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": NaN,
+    "Unnamed: 3": NaN,
+    "Unnamed: 4": NaN,
+    "Unnamed: 5": NaN,
+    "Unnamed: 6": NaN,
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": "顺序号",
+    "Unnamed: 3": "元素名称",
+    "Unnamed: 4": "中文说明",
+    "Unnamed: 5": "数据类型",
+    "Unnamed: 6": "出现类型",
+    "Unnamed: 7": "备注"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": "BizPageResponse",
+    "Unnamed: 1": "BizResponse",
+    "Unnamed: 2": 1,
+    "Unnamed: 3": "respAppName",
+    "Unnamed: 4": "应用名称",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 2,
+    "Unnamed: 3": "respType",
+    "Unnamed: 4": "返回类型",
+    "Unnamed: 5": "String(1)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "TradeStatusEnum:\n    SUCCESS(\"S\", \"成功\"),\n    FAIL(\"F\", \"失败\"),\n    PROCESS(\"P\", \"处理中\"),\n    ACCEPT(\"A\", \"已接收\"),\n    UNKNOWN(\"U\", \"未知\"),\n    WORKFLOW(\"W\", \"工单\");"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 3,
+    "Unnamed: 3": "respStatus",
+    "Unnamed: 4": "返回类型",
+    "Unnamed: 5": "String(1)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "同respType"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 4,
+    "Unnamed: 3": "respCode",
+    "Unnamed: 4": "返回编码",
+    "Unnamed: 5": "String(16)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 5,
+    "Unnamed: 3": "respMsg",
+    "Unnamed: 4": "返回信息",
+    "Unnamed: 5": "String(256)",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 6,
+    "Unnamed: 3": "respExt",
+    "Unnamed: 4": "扩展信息",
+    "Unnamed: 5": "String(1024)",
+    "Unnamed: 6": "O",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 7,
+    "Unnamed: 3": "headSerialNo",
+    "Unnamed: 4": "交易流水",
+    "Unnamed: 5": "String(32)",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": NaN
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 8,
+    "Unnamed: 3": "total",
+    "Unnamed: 4": "总记录数",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页查询总记录数"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 9,
+    "Unnamed: 3": "start",
+    "Unnamed: 4": "起始序号",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认1"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 10,
+    "Unnamed: 3": "size",
+    "Unnamed: 4": "查询条数",
+    "Unnamed: 5": "int",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "分页必输，默认10"
+  },
+  {
+    "公共报文头入参：TbspRequest/PageRequest": NaN,
+    "Unnamed: 1": NaN,
+    "Unnamed: 2": 11,
+    "Unnamed: 3": "dtos",
+    "Unnamed: 4": "数据列表",
+    "Unnamed: 5": "List<T>",
+    "Unnamed: 6": "M",
+    "Unnamed: 7": "T为泛型类"
+  }
+]

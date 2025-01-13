@@ -7,6 +7,12 @@
         <br /><br />
         <alert :message="message" v-if="showMessage"></alert>
         <el-button type="primary" @click="toggleAddBookModal">Add Book</el-button>
+        <el-upload ref="upload" class="upload-demo" action="http://localhost:5001/upload/excel" :file-list="fileList" :on-success="handleSuccess" :on-error="handleError" :before-upload="beforeUpload" :on-exceed="handleExceed" :limit="1" accept=".xlsx,.xls">
+          <el-button type="primary">上传Excel文件</el-button>
+          <template #tip>
+            <div class="el-upload__tip">请上传 xlsx 或 xls 格式的Excel文件</div>
+          </template>
+        </el-upload>
         <br /><br />
         <table class="table table-hover">
           <thead>
@@ -118,6 +124,7 @@ export default {
     return {
       activeAddBookModal: false,
       activeEditBookModal: false,
+      fileList: [], // 添加文件列表数据
       addBookForm: {
         title: "",
         author: "",
@@ -138,6 +145,38 @@ export default {
     alert: Alert,
   },
   methods: {
+    // 上传成功处理
+    handleSuccess(response) {
+      ElMessage.success("文件上传成功");
+      console.log("上传成功:", response.data);
+    },
+
+    // 上传失败处理
+    handleError(error) {
+      ElMessage.error("文件上传失败");
+      console.error("上传失败:", error);
+    },
+
+    // 上传前验证
+    beforeUpload(file) {
+      const isExcel = file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type === "application/vnd.ms-excel";
+      if (!isExcel) {
+        ElMessage.error("只能上传Excel文件!");
+        return false;
+      }
+
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        ElMessage.error("文件大小不能超过 2MB!");
+        return false;
+      }
+      return true;
+    },
+
+    // 超出限制处理
+    handleExceed() {
+      ElMessage.warning("每次只能上传一个文件");
+    },
     addBook(payload) {
       const path = "http://localhost:5001/books";
       axios

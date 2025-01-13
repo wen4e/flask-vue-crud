@@ -1,11 +1,75 @@
 import json
 import os
 import pandas as pd
+import random
+import string
 
 
 # 处理excel文件
 class ExcelHandler:
     ALLOWED_EXTENSIONS = {"xlsx", "xls"}
+    DATA_DIR = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"
+    )
+
+    @staticmethod
+    def process_excel_data(df):
+        """处理Excel数据的静态方法"""
+        try:
+            # 转换DataFrame为字典列表
+            data = df.to_dict("records")
+            return {"success": True, "data": data}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    @staticmethod
+    def save_to_json(data, filename):
+        """保存数据为JSON文件"""
+        try:
+            # 确保data目录存在
+            if not os.path.exists(ExcelHandler.DATA_DIR):
+                os.makedirs(ExcelHandler.DATA_DIR)
+
+            # 生成JSON文件路径
+            json_path = os.path.join(ExcelHandler.DATA_DIR, f"{filename}.json")
+
+            # 保存为JSON文件
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+
+            return {"success": True, "file_path": json_path}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    @staticmethod
+    def read_excel(file_path):
+        """读取Excel文件并返回处理后的数据"""
+        try:
+            # 获取文件名（不含扩展名）
+            filename = "excel"
+
+            # 根据文件扩展名选择引擎
+            file_extension = os.path.splitext(file_path)[1].lower()
+            engine = "xlrd" if file_extension == ".xls" else "openpyxl"
+
+            # 读取Excel文件
+            df = pd.read_excel(file_path, engine=engine)
+
+            # 处理数据
+            result = ExcelHandler.process_excel_data(df)
+            if result["success"]:
+                # 保存为JSON文件
+                save_result = ExcelHandler.save_to_json(result["data"], filename)
+                if save_result["success"]:
+                    return {
+                        "success": True,
+                        "data": result["data"],
+                        "file_path": save_result["file_path"],
+                    }
+
+            return result
+        except Exception as e:
+            return {"success": False, "error": str(e)}
 
     @staticmethod
     def allowed_file(filename):
@@ -13,15 +77,6 @@ class ExcelHandler:
             "." in filename
             and filename.rsplit(".", 1)[1].lower() in ExcelHandler.ALLOWED_EXTENSIONS
         )
-
-    @staticmethod
-    def read_excel(file_path):
-        """读取Excel文件并返回数据"""
-        try:
-            df = pd.read_excel(file_path)
-            return {"success": True, "data": df.to_dict("records")}
-        except Exception as e:
-            return {"success": False, "error": str(e)}
 
 
 # 处理json文件
