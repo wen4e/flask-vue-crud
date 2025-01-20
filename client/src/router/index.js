@@ -1,19 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Books from '../components/Books.vue'
-import Ping from '../components/Ping.vue'
-
+import apiList from '../views/apiList.vue'
+import newPage from '../views/newPage.vue'
+import query from '../views/query.vue'
+import edit from '../views/edit.vue'
+import detail from '../views/detail.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'Books',
-      component: Books,
+      name: 'newPage',
+      component: newPage,
     },
     {
-      path: '/ping',
-      name: 'ping',
-      component: Ping
+      path: '/query',
+      name: 'query',
+      component: query,
+    },
+    {
+      path: '/apiList',
+      name: 'apiList',
+      component: apiList,
     },
   ]
 })
