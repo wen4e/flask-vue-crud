@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="container">
     <el-alert type="info" description="请点击按钮，新建一个页面" :closable="false"></el-alert>
     <div class="button-wrap">
       <el-button type="primary" @click="handleClick('QUERY')">新建查询页面</el-button>
@@ -49,14 +49,7 @@ onDeactivated(() => {
 </script>
 
 <style lang="scss" scoped>
-.layout {
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  width: 1100px;
-  margin: 0 auto;
-  .button-wrap {
-    margin-top: 20px;
-  }
+.button-wrap {
+  margin-top: 20px;
 }
 </style>
