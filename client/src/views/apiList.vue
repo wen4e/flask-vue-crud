@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-upload ref="upload" class="upload-demo" action="http://localhost:5001/upload/excel" :file-list="fileList" :on-success="handleSuccess" :on-error="handleError" :before-upload="beforeUpload" :on-exceed="handleExceed" accept=".xlsx,.xls">
+    <el-upload ref="upload" class="upload-demo" :action="`${api.defaults.baseURL}/upload/excel`" :file-list="fileList" :on-success="handleSuccess" :on-error="handleError" :before-upload="beforeUpload" :on-exceed="handleExceed" accept=".xlsx,.xls">
       <el-button type="primary">上传Excel文件</el-button>
     </el-upload>
 
@@ -19,7 +19,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import api from "../api";
 import { ElMessage } from "element-plus";
 
 const router = useRouter();
@@ -60,10 +60,9 @@ const handleExceed = () => {
 };
 
 const getTrCode = async () => {
-  const path = "http://localhost:5001/trCode";
   try {
-    const res = await axios.get(path);
-    trData.value = res.data.data;
+    const res = await api.get("/trCode");
+    trData.value = res.data;
   } catch (error) {
     console.error(error);
   }
