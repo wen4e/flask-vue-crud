@@ -7,3 +7,4 @@ __pycache__
 /server/build
 /server/src/static
 /server/src/data
+/server/src/utils/config.py
