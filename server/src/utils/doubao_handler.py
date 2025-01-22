@@ -1,13 +1,14 @@
 import os
 from volcenginesdkarkruntime import Ark
+from .config import VOLC_CONFIG
 
 
 class DoubaoHandler:
     def __init__(self):
         # 从环境变量获取密钥，便于管理和安全性
         self.client = Ark(
-            ak="AKLTNDhhZjBjZGM2YWVkNDM0M2JlMmNjZDZiYTFkYmRjZWQ",  # 替换为有效的AK
-            sk="T0RZd1pqRmxOak0xTVdWbU5EaG1OR0ptWVdJeE0yVTFNVE5pTjJZek5EZw==",  # 替换为有效的SK
+            ak=VOLC_CONFIG["ak"],
+            sk=VOLC_CONFIG["sk"],
             base_url="https://ark.cn-beijing.volces.com/api/v3",
             timeout=120,
             max_retries=2,
