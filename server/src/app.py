@@ -82,6 +82,28 @@ def all_trcode():
     return jsonify(response_object)
 
 
+# 在现有import下添加
+from utils.doubao_handler import DoubaoHandler
+
+# 在app实例化后添加
+doubao_handler = DoubaoHandler()
+
+
+# 添加新的路由
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json()
+    if not data or "prompt" not in data:
+        return jsonify({"error": "缺少必要的prompt参数"}), 400
+
+    result = doubao_handler.chat_completion(data["prompt"])
+
+    if result["success"]:
+        return jsonify({"message": "请求成功", "data": result["data"]})
+    else:
+        return jsonify({"error": result["error"]}), 500
+
+
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_frontend(path):
