@@ -10,6 +10,7 @@ import { ref } from "vue";
 import api from "@/api";
 const pageName = ref("");
 const result = ref("");
+
 const isCamelCase = (str) => {
   // 正则表达式规则:
   // ^[a-z] - 首字母必须小写
@@ -33,7 +34,6 @@ const submit = async (retryCount = 0) => {
 - 输入：「用户列表」 => 输出：「userList」
 请将【${pageName.value}】转换并仅输出处理结果。`;
   const prompt1 = `请将【${pageName.value}】翻译成英文`;
-
   const res = await api.post("/chat", { prompt: prompt1 });
   const { data } = res;
   if (isCamelCase(data)) {
