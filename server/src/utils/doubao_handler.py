@@ -1,4 +1,3 @@
-import os
 from volcenginesdkarkruntime import Ark
 from .config import VOLC_CONFIG
 
