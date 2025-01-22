@@ -22,7 +22,7 @@ const MAX_RETRIES = 5;
 const RETRY_DELAY = 300; // 1秒延迟
 
 const submit = async (retryCount = 0) => {
-  const prompt = `你是一位专业的文本转换大语言模型，请按照以下规则将输入字符串 [${pageName.value}] 转换成以小写开头的纯英文驼峰格式（camelCase）并直接输出结果：
+  const prompt0 = `你是一位专业的文本转换大语言模型，请按照以下规则将输入字符串【${pageName.value}】转换成以小写开头的纯英文驼峰格式（camelCase）并直接输出结果：
 1. 若输入中包含中文或其他语言字符，请尽量以合理的音译或译词来表达中文含义；
 2. 只保留英文字母 (a-z, A-Z)，不包含数字、符号、空格等其他字符；
 3. 输出必须是小写开头的驼峰格式，如 "questionRecord"、"userList"、"myHomePage" 等；
@@ -31,9 +31,10 @@ const submit = async (retryCount = 0) => {
 **示例：**
 - 输入：「问题记录」 => 输出：「questionRecord」
 - 输入：「用户列表」 => 输出：「userList」
-请将 [${pageName.value}] 转换并仅输出处理结果。`;
+请将【${pageName.value}】转换并仅输出处理结果。`;
+  const prompt1 = `请将【${pageName.value}】翻译成英文`;
 
-  const res = await api.post("/chat", { prompt });
+  const res = await api.post("/chat", { prompt: prompt1 });
   const { data } = res;
   if (isCamelCase(data)) {
     result.value = data;
