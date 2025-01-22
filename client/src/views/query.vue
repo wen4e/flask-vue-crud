@@ -1,6 +1,6 @@
 <template>
-  <div class="title">页面名称</div>
-  <el-input class="w-64" v-model="pageName" placeholder="请输入页面名称"></el-input>
+  <div class="text-base mb-2">查询页面名称</div>
+  <el-input class="w-64" v-model="pageName" placeholder="请输入查询页面名称"></el-input>
 </template>
 
 <script setup>
