@@ -1,8 +1,8 @@
 <template>
   <div class="text-base mb-2">生成页面</div>
-  <el-form :model="formData" class="w-64">
-    <el-form-item label="查询页面名称">
-      <el-input v-model="pageName" placeholder="请输入查询页面名称" maxlength="10"></el-input>
+  <el-form :model="formData" :rules="formRules" class="w-64" ref="formRef">
+    <el-form-item label="查询页面名称" prop="pageName">
+      <el-input v-model="formData.pageName" placeholder="请输入查询页面名称" maxlength="10"></el-input>
     </el-form-item>
     <el-button @click="submit(0)">生成</el-button>
   </el-form>
@@ -10,28 +10,29 @@
 </template>
 
 <script setup>
-import { formatResult } from "@/utils/tools";
-import { ref } from "vue";
+import { isCamelCase, formatCamelCase } from "@/utils/tools";
+import { ref, reactive } from "vue";
 import api from "@/api";
-const pageName = ref("");
 const result = ref("");
-
-// 校验是否为驼峰格式
-const isCamelCase = (str) => {
-  // 正则表达式规则:
-  // ^[a-z] - 首字母必须小写
-  // [a-zA-Z0-9]* - 后面可以是任意数量的字母和数字
-  const camelCaseRegex = /^[a-z][a-zA-Z0-9]*$/;
-  return camelCaseRegex.test(str);
+const formRef = ref(null);
+const formData = reactive({
+  pageName: "",
+});
+const formRules = {
+  pageName: [{ required: true, message: "请输入查询页面名称", trigger: "blur" }],
 };
+
 // 提交转换请求
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 300; // 1秒延迟
 
 const submit = async (retryCount = 0) => {
-  const prompt0 = `请将【${pageName.value}】翻译成英文，并将结果转换成小写开头的驼峰格式（camelCase）并直接输出结果。`;
+  // 添加表单验证
+  if (!formRef.value) return;
+  await formRef.value.validate();
+  const prompt0 = `请将【${formData.pageName}】翻译成英文，并将结果转换成小写字母开头的驼峰格式（camelCase）并直接输出结果。不需要多余的内容，只需要返回英文单词的驼峰格式即可。`;
 
-  const prompt1 = `你是一位专业的文本转换大语言模型，请按照以下规则将输入字符串【${pageName.value}】转换成以小写开头的纯英文驼峰格式（camelCase）并直接输出结果：
+  const prompt1 = `你是一位专业的文本转换大语言模型，请按照以下规则将输入字符串【${formData.pageName}】转换成以小写开头的纯英文驼峰格式（camelCase）并直接输出结果：
 1. 若输入中包含中文或其他语言字符，请尽量以合理的音译或译词来表达中文含义；
 2. 只保留英文字母 (a-z, A-Z)，不包含数字、符号、空格等其他字符；
 3. 输出必须是小写开头的驼峰格式，如 "questionRecord"、"userList"、"myHomePage" 等；
@@ -40,14 +41,14 @@ const submit = async (retryCount = 0) => {
 **示例：**
 - 输入：「问题记录」 => 输出：「questionRecord」
 - 输入：「用户列表」 => 输出：「userList」
-请将【${pageName.value}】转换并仅输出处理结果。`;
+请将【${formData.pageName}】转换并仅输出处理结果。`;
   let prompt = prompt0;
   if (retryCount > 1) {
     prompt = prompt1;
   }
   const res = await api.post("/chat", { prompt });
   const { data } = res;
-  let formattedData = formatResult(data);
+  let formattedData = formatCamelCase(data);
   if (isCamelCase(formattedData)) {
     result.value = formattedData;
     return formattedData; // 返回成功结果
@@ -56,6 +57,9 @@ const submit = async (retryCount = 0) => {
     await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
     // 等待重试结果并返回
     return await submit(retryCount + 1);
+  } else {
+    result.value = "转换失败，请检查输入内容";
+    return "转换失败，请检查输入内容";
   }
 };
 </script>

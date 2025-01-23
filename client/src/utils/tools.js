@@ -1,13 +1,20 @@
-// 格式化结果字符串,例如：'hello-world' 或 'hello world' => 'helloWorld'
-export const formatResult = (str) => {
-  // 移除连字符，替换为空格
-  let processedStr = str.replace(/-/g, " ");
 
-  // 分割成单词数组，过滤空字符串
-  let words = processedStr.split(/\s+/).filter((word) => word.length > 0);
+// 校验是否为驼峰格式
+export const isCamelCase = (str) => {
+  // 正则表达式规则:
+  // ^[a-z] - 首字母必须小写
+  // [a-zA-Z0-9]* - 后面可以是任意数量的字母和数字
+  const camelCaseRegex = /^[a-z][a-zA-Z0-9]*$/;
+  return camelCaseRegex.test(str);
+};
 
-  if (words.length === 0) return "";
+// 合并提取单词和格式化功能
+export const formatCamelCase = (str) => {
+  // 1. 提取英文单词
+  const words = str.match(/[a-zA-Z][a-z]*/g);
+  if (!words) return '';
 
+  // 2. 格式化处理
   // 处理首个单词，确保首字母小写
   words[0] = words[0].toLowerCase();
 
@@ -17,5 +24,5 @@ export const formatResult = (str) => {
   }
 
   // 合并所有单词
-  return words.join("");
+  return words.join('');
 };
