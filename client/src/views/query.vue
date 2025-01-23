@@ -4,7 +4,7 @@
     <el-form-item label="查询页面名称" prop="pageName">
       <el-input v-model.trim="formData.pageName" placeholder="请输入查询页面名称" maxlength="10" :clearable="true"></el-input>
     </el-form-item>
-    <el-button @click="submit(0)">生成</el-button>
+    <el-button @click="submit(0)" type="primary">生成</el-button>
   </el-form>
   <div class="text-sm mt-2">{{ result }}</div>
 </template>
