@@ -2,7 +2,7 @@
   <div class="text-base mb-2">生成页面</div>
   <el-form :model="formData" :rules="formRules" class="w-64" ref="formRef">
     <el-form-item label="查询页面名称" prop="pageName">
-      <el-input v-model="formData.pageName" placeholder="请输入查询页面名称" maxlength="10"></el-input>
+      <el-input v-model.trim="formData.pageName" placeholder="请输入查询页面名称" maxlength="10" :clearable="true"></el-input>
     </el-form-item>
     <el-button @click="submit(0)">生成</el-button>
   </el-form>
@@ -19,7 +19,19 @@ const formData = reactive({
   pageName: "",
 });
 const formRules = {
-  pageName: [{ required: true, message: "请输入查询页面名称", trigger: "blur" }],
+  pageName: [
+    { required: true, message: "请输入查询页面名称", trigger: "blur" },
+    {
+      validator(rule, value, callback) {
+        if (!/^[\u4e00-\u9fa5]+$/.test(value)) {
+          callback(new Error("只能输入中文"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
 };
 
 // 提交转换请求
