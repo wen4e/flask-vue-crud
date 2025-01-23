@@ -33,7 +33,7 @@ const submit = async (retryCount = 0) => {
 - 输入：「问题记录」 => 输出：「questionRecord」
 - 输入：「用户列表」 => 输出：「userList」
 请将【${pageName.value}】转换并仅输出处理结果。`;
-  const prompt1 = `请将【${pageName.value}】翻译成英文`;
+  const prompt1 = `请将【${pageName.value}】翻译成英文，并将结果转换成小写开头的驼峰格式（camelCase）并直接输出结果。`;
   const res = await api.post("/chat", { prompt: prompt1 });
   const { data } = res;
   if (isCamelCase(data)) {
