@@ -89,7 +89,7 @@ from utils.doubao_handler import DoubaoHandler
 doubao_handler = DoubaoHandler()
 
 
-# 添加新的路由
+# chat接口
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json()
@@ -97,6 +97,28 @@ def chat():
         return jsonify({"error": "缺少必要的prompt参数"}), 400
 
     result = doubao_handler.chat_completion(data["prompt"])
+
+    if result["success"]:
+        return jsonify({"message": "请求成功", "data": result["data"]})
+    else:
+        return jsonify({"error": result["error"]}), 500
+
+
+# 在现有import下添加
+from utils.code_handler import CodeHandler
+
+# 在app实例化后添加
+code_handler = CodeHandler()
+
+
+# 创建页面
+@app.route("/createPage", methods=["POST"])
+def create_page():
+    data = request.get_json()
+    if not data or "pageName" not in data:
+        return jsonify({"error": "缺少必要的pageName参数"}), 400
+
+    result = code_handler.create_page(data["pageName"])
 
     if result["success"]:
         return jsonify({"message": "请求成功", "data": result["data"]})
