@@ -15,7 +15,8 @@ class DoubaoHandler:
 
     def chat_completion(self, prompt, temperature=0.7, stream=False):
         try:
-            messages = [self.system_message, {"role": "user", "content": prompt}]
+            # messages = [self.system_message, {"role": "user", "content": prompt}]
+            messages = [{"role": "user", "content": prompt}]
             response = self.client.chat.completions.create(
                 model="ep-20250122144359-6kmv5",
                 messages=messages,
