@@ -1,4 +1,5 @@
 import os
+from jinja2 import Environment, FileSystemLoader
 
 
 class CodeHandler:
@@ -11,6 +12,11 @@ class CodeHandler:
         self.target_dir = os.path.join(
             os.path.dirname(current_dir), "code", "src", "views", "orgManage"
         )
+        # 设置Jinja2环境
+        template_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "../templates"
+        )
+        self.env = Environment(loader=FileSystemLoader(template_dir))
 
     def create_page(self, code):
         """
@@ -31,39 +37,13 @@ class CodeHandler:
             if os.path.exists(file_path):
                 return {"success": False, "error": f"文件 {file_name} 已存在"}
 
-            # Vue页面模板
-            template = """<template>
-  <div class="${code}-container">
-    <h1>${code}</h1>
-  </div>
-</template>
-
-<script>
-export default {
-  name: '${code}',
-  data() {
-    return {
-      // 数据属性
-    }
-  },
-  methods: {
-    // 方法定义
-  }
-}
-</script>
-
-<style scoped>
-.${code}-container {
-  padding: 20px;
-}
-</style>
-""".replace(
-                "${code}", code
-            )
+            # 加载并渲染模板
+            template = self.env.get_template("vue_template.jinja2")
+            rendered = template.render(code=code)
 
             # 写入文件
             with open(file_path, "w", encoding="utf-8") as f:
-                f.write(template)
+                f.write(rendered)
 
             return {"success": True, "data": {"file": file_name, "path": file_path}}
 
