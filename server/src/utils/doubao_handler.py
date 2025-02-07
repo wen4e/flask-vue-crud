@@ -6,11 +6,11 @@ class DoubaoHandler:
     def __init__(self):
         self.client = OpenAI(
             api_key=VOLC_CONFIG["ak"],  # 使用 ak 作为 api_key
-            base_url="https://ark.cn-beijing.volces.com/api/v3",
+            base_url=VOLC_CONFIG["baseUrl"],  # 使用 baseUrl 作为 base_url
         )
         self.system_message = {
             "role": "system",
-            "content": "你是豆包，是由字节跳动开发的 AI 人工智能助手",
+            "content": "You are a helpful assistant",
         }
 
     def chat_completion(self, prompt, temperature=0.7, stream=False):
@@ -18,7 +18,7 @@ class DoubaoHandler:
             # messages = [self.system_message, {"role": "user", "content": prompt}]
             messages = [{"role": "user", "content": prompt}]
             response = self.client.chat.completions.create(
-                model="ep-20250122144359-6kmv5",
+                model=VOLC_CONFIG["mode"],
                 messages=messages,
                 temperature=temperature,
                 max_tokens=4096,
