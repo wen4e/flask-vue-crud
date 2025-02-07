@@ -2,7 +2,7 @@ from openai import OpenAI
 from .config import VOLC_CONFIG
 
 
-class DoubaoHandler:
+class OpenAIHandler:
     def __init__(self):
         self.client = OpenAI(
             api_key=VOLC_CONFIG["ak"],  # 使用 ak 作为 api_key

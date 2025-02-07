@@ -83,10 +83,10 @@ def all_trcode():
 
 
 # 在现有import下添加
-from utils.doubao_handler import DoubaoHandler
+from utils.openai_handler import OpenAIHandler
 
 # 在app实例化后添加
-doubao_handler = DoubaoHandler()
+openai_handler = OpenAIHandler()
 
 
 # chat接口
@@ -96,7 +96,7 @@ def chat():
     if not data or "prompt" not in data:
         return jsonify({"error": "缺少必要的prompt参数"}), 400
 
-    result = doubao_handler.chat_completion(data["prompt"])
+    result = openai_handler.chat_completion(data["prompt"])
 
     if result["success"]:
         return jsonify({"message": "请求成功", "data": result["data"]})
