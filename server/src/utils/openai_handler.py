@@ -13,7 +13,7 @@ class OpenAIHandler:
             "content": "You are a helpful assistant",
         }
 
-    def chat_completion(self, prompt, temperature=0.7, stream=False):
+    def chat_completion(self, prompt, temperature=1.3, stream=False):
         try:
             # messages = [self.system_message, {"role": "user", "content": prompt}]
             messages = [{"role": "user", "content": prompt}]
