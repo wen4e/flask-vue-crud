@@ -1,20 +1,21 @@
 <template>
-  <div>
-    <vxe-table :data="tableData">
-      <vxe-column type="seq" width="70"></vxe-column>
-      <vxe-column field="name" title="Name"></vxe-column>
-      <vxe-column field="sex" title="Sex"></vxe-column>
-      <vxe-column field="age" title="Age"></vxe-column>
-    </vxe-table>
-  </div>
+  <div></div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-const tableData = ref([
-  { id: 10001, name: "Test1", role: "Develop", sex: "Man", age: 28, address: "test abc" },
-  { id: 10002, name: "Test2", role: "Test", sex: "Women", age: 22, address: "Guangzhou" },
-  { id: 10003, name: "Test3", role: "PM", sex: "Man", age: 32, address: "Shanghai" },
-  { id: 10004, name: "Test4", role: "Designer", sex: "Women", age: 24, address: "Shanghai" },
-]);
+import { getRandomString } from "@/utils/tools";
+import axios from "axios";
+import { useLocalStorage } from "@vueuse/core";
+const SerialNo = getRandomString(22);
+const login = async () => {
+  try {
+    const response = await axios.post("/tbspApi/tbsp/bank/tool/login", { headUserNo: "jres", headTrDate: "20250210", headSerialNo: SerialNo, headReqDate: "20250210", headReqTime: "193246", headReqSerialNo: SerialNo, headOrigDate: "20250210", headOrigTime: "193246", headOrigSerialNo: SerialNo, language: "1", orgNo: "", userNo: "jres", passwd: "33240f293bd2daad67ab8b1c6964b1b9", verificationCode: "", headChannel: "01", headOrgNo: "1", headCustNo: "000400000009999", headMenuCode: "bank", headTrCode: "tool" });
+    const loginInfo = response.data;
+    useLocalStorage("loginInfo", loginInfo);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+login();
 </script>

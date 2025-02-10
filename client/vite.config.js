@@ -25,5 +25,14 @@ export default defineConfig({
         autoprefixer
       ]
     }
+  },
+  server: {
+    proxy: {
+      '/tbspApi': {
+        target: 'http://10.20.29.157:7150',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/tbspApi/, '')
+      }
+    }
   }
 })
