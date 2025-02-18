@@ -1,41 +1,41 @@
 <template>
   <el-dialog v-model="dialogVisible" title="生成页面" width="500">
     <el-form :model="form">
-      <el-form-item label="Promotion name" :label-width="formLabelWidth">
-        <el-input v-model="form.name" autocomplete="off" />
+      <h3>{{ data.menuName }}</h3>
+      <el-form-item label="页面名称">
+        <el-input v-model="form.pageName" autocomplete="off" clearable />
       </el-form-item>
-      <el-form-item label="Zones" :label-width="formLabelWidth">
-        <el-select v-model="form.region" placeholder="Please select a zone">
-          <el-option label="Zone No.1" value="shanghai" />
-          <el-option label="Zone No.2" value="beijing" />
-        </el-select>
+      <el-form-item label="页面路径">
+        <el-input v-model="form.pagePath" autocomplete="off" clearable />
       </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false"> Confirm </el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible = false"> 确认 </el-button>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, defineExpose } from "vue";
 const dialogVisible = ref(false);
-const form = reactive({
-  name: "",
-  region: "",
-  date1: "",
-  date2: "",
-  delivery: false,
-  type: [],
-  resource: "",
-  desc: "",
+let form = reactive({
+  pageName: "",
+  pagePath: "",
 });
-const show = () => {
+let data = reactive({
+  menuName: "",
+});
+const show = (row) => {
+  data = row;
+  console.log("🚀 ~ show ~ data:", data);
+  form.pageName = row.menuName;
   dialogVisible.value = true;
 };
+// 暴露给父组件使用
+defineExpose({ show });
 </script>
 
 <style lang="scss" scoped></style>

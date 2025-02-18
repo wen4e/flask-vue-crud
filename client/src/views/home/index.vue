@@ -46,9 +46,11 @@
       </template>
     </vxe-column>
   </vxe-table>
+  <generate-page-dialog ref="generatePageDialogRef" />
 </template>
 
 <script setup>
+import generatePageDialog from "./components/generatePageDialog.vue";
 import { ElMessage } from "element-plus";
 import { getRandomString } from "@/utils/tools";
 import enums from "@/utils/menuCommon";
@@ -56,6 +58,7 @@ import axios from "axios";
 import { useLocalStorage } from "@vueuse/core";
 import { ref, reactive } from "vue";
 let menuList = ref([]);
+const generatePageDialogRef = ref(null); // 新增的 ref
 const treeConfig = reactive({
   transform: true,
   rowField: "menuCode",
@@ -138,7 +141,11 @@ const copyRowEvent = (row) => {
   }
 };
 // 生成页面
-const generatePageRowEvent = (row) => {};
+const generatePageRowEvent = (row) => {
+  if (generatePageDialogRef.value) {
+    generatePageDialogRef.value.show(row);
+  }
+};
 
 // 登录
 const login = async () => {
