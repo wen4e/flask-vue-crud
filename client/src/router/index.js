@@ -4,14 +4,14 @@ import newPage from '../views/newPage.vue'
 import query from '../views/query.vue'
 import edit from '../views/edit.vue'
 import detail from '../views/detail.vue'
-import homePage from '../views/homePage.vue'
+import homeIndex from '../views/home/index.vue'
 import notFound from '../views/404.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/homePage'
+      redirect: '/homeIndex'
     },
     {
       path: '/newPage',
@@ -19,9 +19,9 @@ const router = createRouter({
       component: newPage
     },
     {
-      path: '/homePage',
-      name: 'homePage',
-      component: homePage
+      path: '/homeIndex',
+      name: 'homeIndex',
+      component: homeIndex
     },
     {
       path: '/query',
