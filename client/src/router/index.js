@@ -4,19 +4,24 @@ import newPage from '../views/newPage.vue'
 import query from '../views/query.vue'
 import edit from '../views/edit.vue'
 import detail from '../views/detail.vue'
-import login from '../views/login.vue'
+import homePage from '../views/homePage.vue'
+import notFound from '../views/404.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'newPage',
-      component: newPage,
+      redirect: '/homePage'
     },
     {
-      path: '/login',
-      name: 'login',
-      component: login,
+      path: '/newPage',
+      name: 'newPage',
+      component: newPage
+    },
+    {
+      path: '/homePage',
+      name: 'homePage',
+      component: homePage
     },
     {
       path: '/query',
@@ -27,6 +32,12 @@ const router = createRouter({
       path: '/apiList',
       name: 'apiList',
       component: apiList,
+    },
+    // 404 page
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: notFound,
     },
   ]
 })
