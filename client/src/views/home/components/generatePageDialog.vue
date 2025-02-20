@@ -31,7 +31,8 @@ let data = reactive({
 const show = (row) => {
   data = row;
   console.log("🚀 ~ show ~ data:", data);
-  form.pageName = row.menuName;
+  form.pageName = row.menuCode;
+  form.pagePath = row.menuHerf;
   dialogVisible.value = true;
 };
 // 暴露给父组件使用

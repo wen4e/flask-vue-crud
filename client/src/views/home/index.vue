@@ -19,7 +19,7 @@
     <vxe-column field="menuHerf" title="菜单链接" width="auto"></vxe-column>
     <vxe-column field="workflowFlag" title="审批标志" width="auto" :formatter="formatterFlag"></vxe-column>
     <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
-    <vxe-column title="操作" width="125" fixed="right">
+    <vxe-column title="操作" width="100" fixed="right">
       <template #default="{ row }">
         <template v-if="hasEditStatus(row)">
           <el-tooltip effect="dark" content="保存" placement="top">
@@ -33,16 +33,16 @@
           <el-tooltip effect="dark" content="编辑" placement="top">
             <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row)"><Edit /></el-icon>
           </el-tooltip>
+          <el-tooltip effect="dark" content="复制" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)"><CopyDocument /></el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="删除" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="delRowEvent(row)"><Delete /></el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="生成页面" placement="top">
+            <el-icon class="cursor-pointer" @click="generatePageRowEvent(row)"><Document /></el-icon>
+          </el-tooltip>
         </template>
-        <el-tooltip effect="dark" content="复制" placement="top">
-          <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)"><CopyDocument /></el-icon>
-        </el-tooltip>
-        <el-tooltip effect="dark" content="删除" placement="top">
-          <el-icon class="mr-2 cursor-pointer" @click="delRowEvent(row)"><Delete /></el-icon>
-        </el-tooltip>
-        <el-tooltip effect="dark" content="生成页面" placement="top">
-          <el-icon class="cursor-pointer" @click="generatePageRowEvent(row)"><Document /></el-icon>
-        </el-tooltip>
       </template>
     </vxe-column>
   </vxe-table>
@@ -56,9 +56,9 @@ import { getRandomString } from "@/utils/tools";
 import enums from "@/utils/menuCommon";
 import axios from "axios";
 import { useLocalStorage } from "@vueuse/core";
-import { ref, reactive } from "vue";
-let menuList = ref([]);
-const generatePageDialogRef = ref(null); // 新增的 ref
+import { ref, reactive, nextTick } from "vue";
+let SerialNo = "";
+// 表格配置
 const treeConfig = reactive({
   transform: true,
   rowField: "menuCode",
@@ -72,7 +72,7 @@ const editConfig = reactive({
   trigger: "manual",
   mode: "row",
 });
-const SerialNo = getRandomString(22);
+
 // 表格格式化
 const formatterMenuKind = ({ cellValue }) => {
   return enums.MENU_KIND_ENUM[cellValue];
@@ -141,6 +141,7 @@ const copyRowEvent = (row) => {
   }
 };
 // 生成页面
+const generatePageDialogRef = ref(null); // 新增的 ref
 const generatePageRowEvent = (row) => {
   if (generatePageDialogRef.value) {
     generatePageDialogRef.value.show(row);
@@ -149,25 +150,46 @@ const generatePageRowEvent = (row) => {
 
 // 登录
 const login = async () => {
+  SerialNo = getRandomString(22);
   try {
     const response = await axios.post("/tbspApi/tbsp/bank/tool/login", { headUserNo: "jres", headTrDate: "20250210", headSerialNo: SerialNo, headReqDate: "20250210", headReqTime: "193246", headReqSerialNo: SerialNo, headOrigDate: "20250210", headOrigTime: "193246", headOrigSerialNo: SerialNo, language: "1", orgNo: "", userNo: "jres", passwd: "33240f293bd2daad67ab8b1c6964b1b9", verificationCode: "", headChannel: "01", headOrgNo: "1", headCustNo: "000400000009999", headMenuCode: "bank", headTrCode: "tool" });
     const loginInfo = response.data;
     useLocalStorage("loginInfo", loginInfo);
-    getMenuList();
+    if (response.data.respType === "S") {
+      getMenuList();
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 };
 
-login();
 // 获取菜单列表
+let menuList = ref([]);
 const getMenuList = async () => {
+  SerialNo = getRandomString(22);
   try {
     const loginInfo = useLocalStorage("loginInfo", {});
     const response = await axios.post("/tbspApi/tbsp/tool-pageMenu", { headUserNo: loginInfo.value.userId, headTrDate: "20250210", headSerialNo: SerialNo, headReqDate: "20250210", headReqTime: "195219", headReqSerialNo: SerialNo, headOrigDate: "20250210", headOrigTime: "195219", headOrigSerialNo: SerialNo, language: "1", menuScope: "4001", trCode: "", menuCode: null, menuName: null, isAdmin: "", isOperator: "", uppMenuCode: "bank-transactionBank", menuCodeLike: null, menuNameLike: null, copyClick: true, pager: false, headMenuCode: "tool-pageMenu" });
-    menuList.value = response.data.dtos;
+    if (response.data.respType === "S") {
+      menuList.value = response.data.dtos;
+      nextTick(() => {
+        const treeData = tableRef.value.getTableData();
+        const firstLevelNodes = treeData.tableData;
+        tableRef.value
+          .setTreeExpand(firstLevelNodes, true)
+          .then(() => {
+            console.log("一级节点已展开");
+          })
+          .catch((err) => {
+            console.error("展开节点失败:", err);
+          });
+      });
+    } else {
+      login();
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 };
+getMenuList();
 </script>
