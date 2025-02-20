@@ -249,9 +249,7 @@ const getMenuList = async () => {
 const handleSearch = () => {
   const filterVal = filterName.value.trim().toLowerCase();
   if (filterVal) {
-    menuList.value = originalMenuList.filter((item) => {
-      return (item.menuName && item.menuName.toLowerCase().includes(filterVal)) || (item.menuCode && item.menuCode.toLowerCase().includes(filterVal)) || (item.trCode && item.trCode.toLowerCase().includes(filterVal)) || (item.uppMenuCode && item.uppMenuCode.toLowerCase().includes(filterVal));
-    });
+    menuList.value = originalMenuList.filter((item) => ["menuName", "menuCode", "trCode", "uppMenuCode"].some((key) => item[key] && item[key].toLowerCase().includes(filterVal)));
   } else {
     menuList.value = originalMenuList;
     nextTick(() => {
