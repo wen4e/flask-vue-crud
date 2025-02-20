@@ -1,8 +1,7 @@
 <template>
   <div>
     <!-- 搜索输入框 -->
-    <vxe-input v-model="filterName" type="search" placeholder="搜索菜单" clearable @change="searchEvent" style="margin-bottom: 16px"></vxe-input>
-
+    <vxe-input v-model="filterName" type="search" placeholder="搜索菜单" class="mb-3" clearable @change="searchEvent"></vxe-input>
     <vxe-table ref="tableRef" show-overflow :column-config="{ resizable: true }" :scroll-y="{ enabled: true, gt: 0 }" height="600" border stripe :loading="loading" :tree-config="{ transform: true, rowField: 'menuCode', parentField: 'uppMenuCode' }" :data="menuList" :checkbox-config="{ labelField: 'menuName', highlight: true }" :edit-config="{ trigger: 'manual', mode: 'row' }">
       <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
       <vxe-column field="menuCode" title="菜单码" :edit-render="{ name: 'VxeInput' }" width="auto"></vxe-column>
