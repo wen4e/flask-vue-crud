@@ -1,6 +1,6 @@
 <template>
-  <vxe-table ref="tableRef" border stripe :loading="loading" :tree-config="treeConfig" :data="menuList" :checkbox-config="checkboxConfig" :edit-config="editConfig">
-    <vxe-column type="checkbox" title="菜单名称" tree-node width="auto" fixed="left"></vxe-column>
+  <vxe-table ref="tableRef" show-overflow :column-config="{ resizable: true }" :scroll-y="{ enabled: true, gt: 0 }" height="600" border stripe :loading="loading" :tree-config="{ transform: true, rowField: 'menuCode', parentField: 'uppMenuCode' }" :data="menuList" :checkbox-config="{ labelField: 'menuName', highlight: true }" :edit-config="{ trigger: 'manual', mode: 'row' }">
+    <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
     <vxe-column field="menuCode" title="菜单码" :edit-render="{ name: 'VxeInput' }" width="auto"></vxe-column>
     <vxe-column field="trCode" title="交易码" width="auto"></vxe-column>
     <vxe-column field="uppMenuCode" title="上级菜单编码" width="auto"></vxe-column>
@@ -19,7 +19,7 @@
     <vxe-column field="menuHerf" title="菜单链接" width="auto"></vxe-column>
     <vxe-column field="workflowFlag" title="审批标志" width="auto" :formatter="formatterFlag"></vxe-column>
     <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
-    <vxe-column title="操作" width="100" fixed="right">
+    <vxe-column title="操作" width="110" fixed="right">
       <template #default="{ row }">
         <template v-if="hasEditStatus(row)">
           <el-tooltip effect="dark" content="保存" placement="top">
@@ -56,22 +56,9 @@ import { getRandomString } from "@/utils/tools";
 import enums from "@/utils/menuCommon";
 import axios from "axios";
 import { useLocalStorage } from "@vueuse/core";
-import { ref, reactive, nextTick } from "vue";
+import { ref, nextTick } from "vue";
 let SerialNo = "";
 // 表格配置
-const treeConfig = reactive({
-  transform: true,
-  rowField: "menuCode",
-  parentField: "uppMenuCode",
-});
-const checkboxConfig = reactive({
-  labelField: "menuName",
-  highlight: true,
-});
-const editConfig = reactive({
-  trigger: "manual",
-  mode: "row",
-});
 
 // 表格格式化
 const formatterMenuKind = ({ cellValue }) => {
