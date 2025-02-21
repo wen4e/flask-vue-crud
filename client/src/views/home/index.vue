@@ -138,6 +138,9 @@ const copySql = () => {
     })
     return
   }
+  selectedRows.forEach((row) => {
+    console.log(row.menuCode)
+  })
   const { copy } = useClipboard()
   const textToCopy = '需要复制的Mysql SQL文本' // 根据需求设置复制内容
   copy(textToCopy)
