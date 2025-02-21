@@ -84,7 +84,7 @@ let originalMenuList = [];
 const filterName = ref("");
 
 // 表格相关
-const loading = ref(false);
+let loading = ref(true);
 const tableRef = ref();
 let menuList = ref([]);
 
@@ -186,6 +186,10 @@ const login = async () => {
     const loginInfo = response.data;
     useLocalStorage("loginInfo", loginInfo);
     if (response.data.respType === "S") {
+      ElMessage({
+        message: "登录成功",
+        type: "success",
+      });
       getMenuList();
     }
   } catch (error) {
@@ -223,6 +227,7 @@ const getMenuList = async () => {
       headMenuCode: "tool-pageMenu",
     });
     if (response.data.respType === "S") {
+      loading.value = false;
       // 将获取到的数据同时赋值给原始数据和当前显示数据
       originalMenuList = response.data.dtos;
       menuList.value = response.data.dtos;
@@ -236,8 +241,11 @@ const getMenuList = async () => {
             console.error("展开节点失败:", err);
           });
       });
-    } else {
+    } else if (response.data.respType === "N") {
+      ElMessage("登录超时，重新登录中");
       login();
+    } else {
+      ElMessage.error(response.data.respMsg);
     }
   } catch (error) {
     console.error("Error fetching data:", error);
