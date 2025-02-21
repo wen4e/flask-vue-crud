@@ -1,7 +1,26 @@
 <template>
   <div>
     <!-- 搜索输入框 -->
-    <vxe-input v-model="filterName" type="search" placeholder="搜索菜单" class="mb-3" clearable @change="searchEvent"></vxe-input>
+    <el-form :inline="true">
+      <el-form-item label="搜索">
+        <el-input v-model="filterName" class="w-[300px]" placeholder="菜单名称/菜单码/交易码/上级菜单编码" clearable @input="searchEvent"></el-input>
+      </el-form-item>
+      <el-form-item label="系统">
+        <el-radio-group v-model="menuScope" @change="searchTable">
+          <el-radio-button value="1001">企业端</el-radio-button>
+          <el-radio-button value="4001">银行端</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="角色">
+        <el-radio-group v-model="role" @change="searchTable">
+          <el-radio-button value="ALL">全部</el-radio-button>
+          <el-radio-button value="ADMIN">管理员</el-radio-button>
+          <el-radio-button value="OPERATOR">操作员</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+
+    <!-- 表格 -->
     <vxe-table
       ref="tableRef"
       show-overflow
@@ -23,7 +42,7 @@
       <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
       <vxe-column field="menuCode" title="菜单码" :edit-render="{ name: 'VxeInput' }" width="auto"></vxe-column>
       <vxe-column field="trCode" title="交易码" width="auto"></vxe-column>
-      <vxe-column field="uppMenuCode" title="上级菜单编码" width="auto"></vxe-column>
+      <vxe-column field="uppMenuCode" title="上级菜单码" width="auto"></vxe-column>
       <vxe-column field="menuLevel" title="菜单级别" width="auto"></vxe-column>
       <vxe-column field="menuKind" title="菜单分类" width="auto" :formatter="formatterMenuKind"></vxe-column>
       <vxe-column field="menuVerify" title="权限校验" width="auto" :formatter="formatterMenuVerify"></vxe-column>
@@ -89,16 +108,13 @@ import { getRandomString } from '@/utils/tools'
 import enums from '@/utils/menuCommon'
 import axios from 'axios'
 import { useLocalStorage } from '@vueuse/core'
+import debounce from 'lodash/debounce'
 import { ref, nextTick } from 'vue'
-import XEUtils from 'xe-utils'
 
 let SerialNo = ''
 
 // 新增变量：用于存储接口返回的完整菜单数据，用于搜索过滤
 let originalMenuList = []
-
-// 搜索框绑定值
-const filterName = ref('')
 
 // 表格相关
 let loading = ref(true)
@@ -213,10 +229,18 @@ const login = async () => {
     console.error('Error fetching data:', error)
   }
 }
+// 搜索功能
+const menuScope = ref('1001')
+const filterName = ref('')
+const role = ref('ALL')
+const uppMenuCode = ref('corp-transactionBank')
+const isAdmin = ref('1')
+const isOperator = ref('0')
 
 // 获取菜单列表（接口返回数据同时存入 originalMenuList 供搜索使用）
 const getMenuList = async () => {
   SerialNo = getRandomString(22)
+  loading.value = true
   try {
     const loginInfo = useLocalStorage('loginInfo', {})
     const response = await axios.post('/tbspApi/tbsp/tool-pageMenu', {
@@ -230,13 +254,13 @@ const getMenuList = async () => {
       headOrigTime: '195219',
       headOrigSerialNo: SerialNo,
       language: '1',
-      menuScope: '4001',
+      menuScope: menuScope.value, //"1001": "企业PC"，"1002": "企业APP"，"4001": "银行PC"
       trCode: '',
       menuCode: null,
       menuName: null,
-      isAdmin: '',
-      isOperator: '',
-      uppMenuCode: 'bank-transactionBank',
+      isAdmin: isAdmin.value,
+      isOperator: isOperator.value,
+      uppMenuCode: uppMenuCode.value,
       menuCodeLike: null,
       menuNameLike: null,
       copyClick: true,
@@ -269,8 +293,28 @@ const getMenuList = async () => {
   }
 }
 
+const searchTable = () => {
+  if (role.value === 'ALL') {
+    isAdmin.value = ''
+    isOperator.value = ''
+  } else if (role.value === 'ADMIN') {
+    isAdmin.value = '1'
+    isOperator.value = ''
+  } else if (role.value === 'OPERATOR') {
+    isAdmin.value = ''
+    isOperator.value = '1'
+  }
+  if (menuScope.value === '1001') {
+    uppMenuCode.value = 'corp-transactionBank'
+  } else if (menuScope.value === '4001') {
+    uppMenuCode.value = 'bank-transactionBank'
+  }
+  getMenuList()
+}
+
 // 搜索函数：根据 filterName 过滤菜单数据（示例中以 menuName 和 menuCode 字段作为匹配）
 const handleSearch = () => {
+  console.log('🚀 ~ handleSearch ~ handleSearch:')
   const filterVal = filterName.value.trim().toLowerCase()
   if (filterVal) {
     menuList.value = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal)))
@@ -289,12 +333,7 @@ const handleSearch = () => {
   }
 }
 
-// 节流搜索，避免频繁触发
-const searchEvent = XEUtils.throttle(handleSearch, 500, {
-  trailing: true,
-  leading: true,
-})
-
+const searchEvent = debounce(handleSearch, 500)
 // 初始化加载菜单列表
 getMenuList()
 </script>
