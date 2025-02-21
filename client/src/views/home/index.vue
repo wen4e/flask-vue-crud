@@ -24,9 +24,9 @@
     <vxe-table
       ref="tableRef"
       show-overflow
+      :height="tableHeight"
       :column-config="{ resizable: true }"
       :scroll-y="{ enabled: true, gt: 0 }"
-      height="600"
       border
       stripe
       :loading="loading"
@@ -114,6 +114,12 @@ import { ref, nextTick } from 'vue'
 // 表格相关
 let loading = ref(true)
 const tableRef = ref()
+let tableHeight = ref()
+const updateTableHeight = () => {
+  tableHeight.value = window.innerHeight - 120
+}
+updateTableHeight()
+window.onresize = debounce(updateTableHeight, 200)
 
 // 表格格式化函数
 const formatterMenuKind = ({ cellValue }) => {
