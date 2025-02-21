@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 搜索输入框 -->
-    <el-form :inline="true">
+    <el-form :inline="true" label-suffix="：">
       <el-form-item label="搜索">
         <el-input v-model="filterName" class="w-[300px]" placeholder="菜单名称/菜单码/交易码/上级菜单编码" clearable @input="searchEvent"></el-input>
       </el-form-item>
@@ -17,6 +17,10 @@
           <el-radio-button value="ADMIN">管理员</el-radio-button>
           <el-radio-button value="OPERATOR">操作员</el-radio-button>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item label="复制sql">
+        <el-button type="primary" @click="copySql">复制mysql</el-button>
+        <el-button type="primary" @click="copyOracle">复制oracle</el-button>
       </el-form-item>
     </el-form>
 
@@ -107,7 +111,7 @@ import { ElMessage } from 'element-plus'
 import { getRandomString } from '@/utils/tools'
 import enums from '@/utils/menuCommon'
 import axios from 'axios'
-import { useLocalStorage } from '@vueuse/core'
+import { useLocalStorage, useClipboard } from '@vueuse/core'
 import debounce from 'lodash/debounce'
 import { ref, nextTick } from 'vue'
 
@@ -120,7 +124,37 @@ const updateTableHeight = () => {
 }
 updateTableHeight()
 window.onresize = debounce(updateTableHeight, 200)
-
+const getSelectEvent = () => {
+  const selectedRows = tableRef.value.getCheckboxRecords()
+  return selectedRows
+}
+// 复制sql
+const copySql = () => {
+  const selectedRows = getSelectEvent()
+  if (selectedRows.length === 0) {
+    ElMessage({
+      message: '请先选择要操作的数据',
+      type: 'warning',
+    })
+    return
+  }
+  const { copy } = useClipboard()
+  const textToCopy = '需要复制的Mysql SQL文本' // 根据需求设置复制内容
+  copy(textToCopy)
+  ElMessage({
+    message: '复制Mysql SQL语句成功',
+    type: 'success',
+  })
+}
+const copyOracle = () => {
+  const { copy } = useClipboard()
+  const textToCopy = '需要复制的Oracle SQL文本' // 根据需求设置复制内容
+  copy(textToCopy)
+  ElMessage({
+    message: '复制Oracle SQL语句成功',
+    type: 'success',
+  })
+}
 // 表格格式化函数
 const formatterMenuKind = ({ cellValue }) => {
   return enums.MENU_KIND_ENUM[cellValue]
@@ -319,7 +353,6 @@ const searchTable = () => {
 
 // 搜索函数：根据 filterName 过滤菜单数据（示例中以 menuName 和 menuCode 字段作为匹配）
 const handleSearch = () => {
-  console.log('🚀 ~ handleSearch ~ handleSearch:')
   const filterVal = filterName.value.trim().toLowerCase()
   if (filterVal) {
     menuList.value = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal)))
