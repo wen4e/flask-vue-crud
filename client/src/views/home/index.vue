@@ -162,7 +162,7 @@ SELECT ${CNST_TENANT_ID}, '1', ${menuId}, ${menuCode}, ${menuName}, ${uppMenuCod
 WHERE NOT EXISTS (SELECT 1 FROM PERM_MENU WHERE MENU_CODE = ${menuCode} AND TENANT_ID = ${CNST_TENANT_ID});
 `
 }
-const flowJsonNotes = (row, notes, dateType, dual) => {
+const handleSqlValue = (row, notes, dateType, dual) => {
   exportSelectedSQL.value += '-- ' + notes + '\r\n'
   for (let i = 0; i < row.length; i++) {
     buildPermMenu(row[i], dateType, dual, notes)
@@ -175,7 +175,7 @@ const copySql = (type) => {
   const selectedRows = getSelectEvent()
   if (selectedRows.length === 0) {
     ElMessage({
-      message: '请先选择要操作的数据',
+      message: '请先选择要复制的数据',
       type: 'warning',
     })
     return
@@ -183,10 +183,10 @@ const copySql = (type) => {
   exportSelectedSQL.value = ''
   switch (type) {
     case 'MYSQL':
-      flowJsonNotes(selectedRows, 'mysql', 'now()', '')
+      handleSqlValue(selectedRows, 'mysql', 'now()', '')
       break
     case 'ORACLE':
-      flowJsonNotes(selectedRows, 'oracle', 'sysdate', 'from dual')
+      handleSqlValue(selectedRows, 'oracle', 'sysdate', 'from dual')
       break
     default:
       break
@@ -194,7 +194,7 @@ const copySql = (type) => {
   const { copy } = useClipboard()
   copy(exportSelectedSQL.value)
   ElMessage({
-    message: '复制sql SQL语句成功',
+    message: '复制SQL语句成功',
     type: 'success',
   })
 }
