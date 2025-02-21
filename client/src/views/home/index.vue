@@ -111,15 +111,9 @@ import { useLocalStorage } from '@vueuse/core'
 import debounce from 'lodash/debounce'
 import { ref, nextTick } from 'vue'
 
-let SerialNo = ''
-
-// 新增变量：用于存储接口返回的完整菜单数据，用于搜索过滤
-let originalMenuList = []
-
 // 表格相关
 let loading = ref(true)
 const tableRef = ref()
-let menuList = ref([])
 
 // 表格格式化函数
 const formatterMenuKind = ({ cellValue }) => {
@@ -191,6 +185,7 @@ const generatePageRowEvent = (row) => {
   }
 }
 
+let SerialNo = ''
 // 登录方法
 const login = async () => {
   SerialNo = getRandomString(22)
@@ -234,8 +229,12 @@ const menuScope = ref('1001')
 const filterName = ref('')
 const role = ref('ALL')
 const uppMenuCode = ref('corp-transactionBank')
-const isAdmin = ref('1')
-const isOperator = ref('0')
+const isAdmin = ref('')
+const isOperator = ref('')
+let menuList = ref([])
+
+// 新增变量：用于存储接口返回的完整菜单数据，用于搜索过滤
+let originalMenuList = []
 
 // 获取菜单列表（接口返回数据同时存入 originalMenuList 供搜索使用）
 const getMenuList = async () => {
