@@ -19,24 +19,24 @@
 </template>
 
 <script setup>
-import { reactive, ref, defineExpose } from "vue";
-const dialogVisible = ref(false);
+import { reactive, ref } from 'vue'
+const dialogVisible = ref(false)
 let form = reactive({
-  pageName: "",
-  pagePath: "",
-});
+  pageName: '',
+  pagePath: '',
+})
 let data = reactive({
-  menuName: "",
-});
+  menuName: '',
+})
 const show = (row) => {
-  data = row;
-  console.log("🚀 ~ show ~ data:", data);
-  form.pageName = row.menuCode;
-  form.pagePath = row.menuHerf;
-  dialogVisible.value = true;
-};
+  data = row
+  console.log('🚀 ~ show ~ data:', data)
+  form.pageName = row.menuCode
+  form.pagePath = row.menuHerf
+  dialogVisible.value = true
+}
 // 暴露给父组件使用
-defineExpose({ show });
+defineExpose({ show })
 </script>
 
 <style lang="scss" scoped></style>

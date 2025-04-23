@@ -16,40 +16,40 @@
 </template>
 
 <script setup>
-import { ElMessage } from "element-plus";
-import { isCamelCase, formatCamelCase } from "@/utils/tools";
-import { ref, reactive } from "vue";
-import api from "@/api";
-const result = ref("");
-const formRef = ref(null);
+import { ElMessage } from 'element-plus'
+import { isCamelCase, formatCamelCase } from '@/utils/tools'
+import { ref, reactive } from 'vue'
+import api from '@/api'
+const result = ref('')
+const formRef = ref(null)
 const formData = reactive({
-  pageName: "",
-});
+  pageName: '',
+})
 const formRules = {
   pageName: [
-    { required: true, message: "请输入查询页面名称", trigger: "blur" },
+    { required: true, message: '请输入查询页面名称', trigger: 'blur' },
     {
       validator(rule, value, callback) {
         if (!/^[\u4e00-\u9fa5]+$/.test(value)) {
-          callback(new Error("只能输入中文"));
+          callback(new Error('只能输入中文'))
         } else {
-          callback();
+          callback()
         }
       },
-      trigger: "blur",
+      trigger: 'blur',
     },
   ],
-};
+}
 
 // 提交转换请求
-const MAX_RETRIES = 5;
-const RETRY_DELAY = 300; // 1秒延迟
+const MAX_RETRIES = 5
+const RETRY_DELAY = 300 // 1秒延迟
 
 const submit = async (retryCount = 0) => {
   // 添加表单验证
-  if (!formRef.value) return;
-  await formRef.value.validate();
-  const prompt0 = `请将【${formData.pageName}】翻译成英文，并将结果转换成小写字母开头的驼峰格式（camelCase）并直接输出结果。不需要多余的内容，只需要返回英文单词的驼峰格式即可。`;
+  if (!formRef.value) return
+  await formRef.value.validate()
+  const prompt0 = `请将【${formData.pageName}】翻译成英文，并将结果转换成小写字母开头的驼峰格式（camelCase）并直接输出结果。不需要多余的内容，只需要返回英文单词的驼峰格式即可。`
 
   const prompt1 = `你是一位专业的文本转换大语言模型，请按照以下规则将输入字符串【${formData.pageName}】转换成以小写开头的纯英文驼峰格式（camelCase）并直接输出结果：
     1. 若输入中包含中文或其他语言字符，请尽量以合理的音译或译词来表达中文含义；
@@ -60,36 +60,36 @@ const submit = async (retryCount = 0) => {
     **示例：**
     - 输入：「问题记录」 => 输出：「questionRecord」
     - 输入：「用户列表」 => 输出：「userList」
-    请将【${formData.pageName}】转换并仅输出处理结果。`;
-  let prompt = prompt0;
+    请将【${formData.pageName}】转换并仅输出处理结果。`
+  let prompt = prompt0
   if (retryCount > 1) {
-    prompt = prompt1;
+    prompt = prompt1
   }
-  const res = await api.post("/chat", { prompt });
-  const { data } = res;
-  let formattedData = formatCamelCase(data);
+  const res = await api.post('/flaskApi/chat', { prompt })
+  const { data } = res
+  let formattedData = formatCamelCase(data)
   if (isCamelCase(formattedData)) {
-    result.value = formattedData;
-    return formattedData; // 返回成功结果
+    result.value = formattedData
+    return formattedData // 返回成功结果
   }
   if (retryCount < MAX_RETRIES) {
-    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY))
     // 等待重试结果并返回
-    return await submit(retryCount + 1);
+    return await submit(retryCount + 1)
   } else {
-    result.value = "转换失败，请检查输入内容";
-    return "转换失败，请检查输入内容";
+    result.value = '转换失败，请检查输入内容'
+    return '转换失败，请检查输入内容'
   }
-};
+}
 
 // 生成页面
 const handlepage = () => {
   if (!result.value) {
-    ElMessage.error("请先转换页面名称");
-    return;
+    ElMessage.error('请先转换页面名称')
+    return
   }
-  api.post("/createPage", { pageName: result.value }).then((res) => {
-    console.log(res);
-  });
-};
+  api.post('/flaskApi/createPage', { pageName: result.value }).then((res) => {
+    console.log(res)
+  })
+}
 </script>
