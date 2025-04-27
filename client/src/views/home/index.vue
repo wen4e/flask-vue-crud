@@ -108,15 +108,16 @@
 <script setup>
 import generatePageDialog from './components/generatePageDialog.vue'
 import { ElMessage } from 'element-plus'
-import { getRandomString } from '@/utils/tools'
 import enums from '@/utils/menuCommon'
-import axios from 'axios'
-import { useLocalStorage, useClipboard } from '@vueuse/core'
+import { useClipboard } from '@vueuse/core'
 import debounce from 'lodash/debounce'
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
+import { useMenuList } from '@/hooks/useMenuList' // 引入useMenuList hook
+
+// 使用menuList hook
+const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
 
 // 表格相关
-let loading = ref(true)
 const tableRef = ref()
 let tableHeight = ref()
 const updateTableHeight = () => {
@@ -269,44 +270,6 @@ const generatePageRowEvent = (row) => {
 }
 
 let SerialNo = ''
-// 登录方法
-const login = async () => {
-  SerialNo = getRandomString(22)
-  try {
-    const response = await axios.post('/tbspApi/tbsp/bank/tool/login', {
-      headUserNo: 'jres',
-      headTrDate: '20250210',
-      headSerialNo: SerialNo,
-      headReqDate: '20250210',
-      headReqTime: '193246',
-      headReqSerialNo: SerialNo,
-      headOrigDate: '20250210',
-      headOrigTime: '193246',
-      headOrigSerialNo: SerialNo,
-      language: '1',
-      orgNo: '',
-      userNo: 'jres',
-      passwd: '33240f293bd2daad67ab8b1c6964b1b9',
-      verificationCode: '',
-      headChannel: '01',
-      headOrgNo: '1',
-      headCustNo: '000400000009999',
-      headMenuCode: 'bank',
-      headTrCode: 'tool',
-    })
-    const loginInfo = response.data
-    useLocalStorage('loginInfo', loginInfo)
-    if (response.data.respType === 'S') {
-      ElMessage({
-        message: '登录成功',
-        type: 'success',
-      })
-      getMenuList()
-    }
-  } catch (error) {
-    console.error('Error fetching data:', error)
-  }
-}
 // 搜索功能
 const menuScope = ref('1001')
 const filterName = ref('')
@@ -314,65 +277,17 @@ const role = ref('ALL')
 const uppMenuCode = ref('corp-transactionBank')
 const isAdmin = ref('')
 const isOperator = ref('')
-let menuList = ref([])
 
-// 新增变量：用于存储接口返回的完整菜单数据，用于搜索过滤
-let originalMenuList = []
-
-// 获取菜单列表（接口返回数据同时存入 originalMenuList 供搜索使用）
+// 获取菜单列表
 const getMenuList = async () => {
-  SerialNo = getRandomString(22)
-  loading.value = true
-  try {
-    const loginInfo = useLocalStorage('loginInfo', {})
-    const response = await axios.post('/tbspApi/tbsp/tool-pageMenu', {
-      headUserNo: loginInfo.value.userId,
-      headTrDate: '20250210',
-      headSerialNo: SerialNo,
-      headReqDate: '20250210',
-      headReqTime: '195219',
-      headReqSerialNo: SerialNo,
-      headOrigDate: '20250210',
-      headOrigTime: '195219',
-      headOrigSerialNo: SerialNo,
-      language: '1',
-      menuScope: menuScope.value, //"1001": "企业PC"，"1002": "企业APP"，"4001": "银行PC"
-      trCode: '',
-      menuCode: null,
-      menuName: null,
-      isAdmin: isAdmin.value,
-      isOperator: isOperator.value,
-      uppMenuCode: uppMenuCode.value,
-      menuCodeLike: null,
-      menuNameLike: null,
-      copyClick: true,
-      pager: false,
-      headMenuCode: 'tool-pageMenu',
-    })
-    if (response.data.respType === 'S') {
-      loading.value = false
-      // 将获取到的数据同时赋值给原始数据和当前显示数据
-      originalMenuList = response.data.dtos
-      menuList.value = response.data.dtos
-      nextTick(() => {
-        const treeData = tableRef.value.getTableData()
-        const firstLevelNodes = treeData.tableData
-        tableRef.value
-          .setTreeExpand(firstLevelNodes, true)
-          .then(() => {})
-          .catch((err) => {
-            console.error('展开节点失败:', err)
-          })
-      })
-    } else if (response.data.respType === 'N') {
-      ElMessage('登录超时，重新登录中')
-      login()
-    } else {
-      ElMessage.error(response.data.respMsg)
-    }
-  } catch (error) {
-    console.error('Error fetching data:', error)
+  const params = {
+    menuScope: menuScope.value,
+    isAdmin: isAdmin.value,
+    isOperator: isOperator.value,
+    uppMenuCode: uppMenuCode.value,
   }
+
+  await fetchMenuList(params, tableRef)
 }
 
 const searchTable = () => {
@@ -396,22 +311,8 @@ const searchTable = () => {
 
 // 搜索函数：根据 filterName 过滤菜单数据（示例中以 menuName 和 menuCode 字段作为匹配）
 const handleSearch = () => {
-  const filterVal = filterName.value.trim().toLowerCase()
-  if (filterVal) {
-    menuList.value = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal)))
-  } else {
-    menuList.value = originalMenuList
-    nextTick(() => {
-      const treeData = tableRef.value.getTableData()
-      const firstLevelNodes = treeData.tableData
-      tableRef.value
-        .setTreeExpand(firstLevelNodes, true)
-        .then(() => {})
-        .catch((err) => {
-          console.error('展开节点失败:', err)
-        })
-    })
-  }
+  const filterVal = filterName.value.trim()
+  searchMenuList(filterVal, tableRef.value)
 }
 
 const searchEvent = debounce(handleSearch, 500)
