@@ -269,7 +269,6 @@ const generatePageRowEvent = (row) => {
   }
 }
 
-let SerialNo = ''
 // 搜索功能
 const menuScope = ref('1001')
 const filterName = ref('')
