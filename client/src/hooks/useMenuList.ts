@@ -1,21 +1,48 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, type Ref } from 'vue'
 import { useLogin } from './useLogin'
 
 export function useMenuList() {
   const { generateSerialNo, login, loginInfo } = useLogin()
   const loading = ref(true)
-  let menuList = ref([])
-  let originalMenuList = []
+  interface MenuItem {
+    menuName: string
+    menuCode: string
+    trCode: string
+    uppMenuCode: string
+    [key: string]: any // For any other properties
+  }
+
+  let menuList = ref<MenuItem[]>([])
+  let originalMenuList: MenuItem[] = []
 
   // 获取菜单列表
-  const getMenuList = async (params, tableRef) => {
+  interface MenuListParams {
+    menuScope: string
+    isAdmin: boolean
+    isOperator: boolean
+    uppMenuCode: string | null
+  }
+
+  interface TableRef {
+    getTableData: () => { tableData: any[] }
+    setTreeExpand: (nodes: any[], expanded: boolean) => Promise<void>
+  }
+
+  interface MenuListResponse {
+    success: boolean
+    data?: MenuItem[]
+    reason?: string
+  }
+
+  const getMenuList = async (params: MenuListParams, tableRef: Ref<TableRef | undefined>): Promise<MenuListResponse> => {
     const SerialNo = generateSerialNo()
     loading.value = true
+
     try {
       const response = await axios.post('/tbspApi/tbsp/tool-pageMenu', {
-        headUserNo: loginInfo.userId,
+        headUserNo: loginInfo.value.userId,
         headTrDate: '20250210',
         headSerialNo: SerialNo,
         headReqDate: '20250210',
@@ -47,14 +74,17 @@ export function useMenuList() {
         // 如果提供了表格引用，展开树节点
         if (tableRef) {
           nextTick(() => {
-            const treeData = tableRef.value.getTableData()
-            const firstLevelNodes = treeData.tableData
-            tableRef.value
-              .setTreeExpand(firstLevelNodes, true)
-              .then(() => { })
-              .catch((err) => {
-                console.error('展开节点失败:', err)
-              })
+            if (tableRef.value) {
+              // 添加此检查
+              const treeData = tableRef.value.getTableData()
+              const firstLevelNodes = treeData.tableData
+              tableRef.value
+                .setTreeExpand(firstLevelNodes, true)
+                .then(() => {})
+                .catch((err) => {
+                  console.error('展开节点失败:', err)
+                })
+            }
           })
         }
 
@@ -72,18 +102,17 @@ export function useMenuList() {
       }
     } catch (error) {
       console.error('Error fetching data:', error)
-      return { success: false, reason: error.message }
+      return {
+        success: false,
+        reason: error instanceof Error ? error.message : '未知错误',
+      }
     }
   }
 
   // 搜索函数：根据条件过滤菜单数据
-  const searchMenuList = (filterVal, $table) => {
+  const searchMenuList = (filterVal: string | null | undefined, $table?: TableRef) => {
     if (filterVal) {
-      menuList.value = originalMenuList.filter((item) =>
-        ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some(
-          (key) => item[key] && item[key].toLowerCase().includes(filterVal.toLowerCase())
-        )
-      )
+      menuList.value = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal.toLowerCase())))
     } else {
       menuList.value = originalMenuList
       // 如果提供了表格引用，展开树节点
@@ -93,7 +122,7 @@ export function useMenuList() {
           const firstLevelNodes = treeData.tableData
           $table
             .setTreeExpand(firstLevelNodes, true)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
               console.error('展开节点失败:', err)
             })
@@ -108,6 +137,6 @@ export function useMenuList() {
     loading,
     menuList,
     getMenuList,
-    searchMenuList
+    searchMenuList,
   }
 }

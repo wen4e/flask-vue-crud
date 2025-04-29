@@ -3,10 +3,15 @@ import { ElMessage } from 'element-plus'
 import { getRandomString } from '@/utils/tools'
 import { useLocalStorage } from '@vueuse/core'
 import { ref } from 'vue'
-
+// 在 useLogin.ts 中添加类型声明
+interface LoginInfoData {
+  userId?: string
+  // 添加其他需要的属性
+  [key: string]: any
+}
 export function useLogin() {
   // 创建持久化的存储引用
-  const loginInfo = useLocalStorage('loginInfo', {})
+  const loginInfo = useLocalStorage<LoginInfoData>('loginInfo', {})
   const SerialNo = ref('')
 
   // 登录方法
