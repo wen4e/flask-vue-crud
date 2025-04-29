@@ -11,17 +11,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/homeIndex'
+      redirect: '/homeIndex',
     },
     {
       path: '/newPage',
       name: 'newPage',
-      component: newPage
+      component: newPage,
     },
     {
       path: '/homeIndex',
       name: 'homeIndex',
-      component: homeIndex
+      component: homeIndex,
     },
     {
       path: '/query',
@@ -39,7 +39,7 @@ const router = createRouter({
       name: 'not-found',
       component: notFound,
     },
-  ]
+  ],
 })
 
 export default router
