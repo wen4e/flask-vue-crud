@@ -9,43 +9,43 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, onBeforeMount, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from "vue";
-import { useRouter } from "vue-router";
+<script setup lang="ts">
+import { onMounted, onBeforeMount, onBeforeUnmount, onUnmounted, onActivated, onDeactivated } from 'vue'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
 // 路由跳转方法
 const handleClick = (type) => {
   router.push({
     name: type.toLowerCase(),
-  });
-};
+  })
+}
 
 // 生命周期钩子
 onMounted(() => {
   // 挂载完成
-});
+})
 
 onBeforeMount(() => {
   // 挂载前
-});
+})
 
 onBeforeUnmount(() => {
   // 卸载前
-});
+})
 
 onUnmounted(() => {
   // 卸载完成
-});
+})
 
 onActivated(() => {
   // keep-alive 激活时
-});
+})
 
 onDeactivated(() => {
   // keep-alive 停用时
-});
+})
 </script>
 
 <style lang="scss" scoped>

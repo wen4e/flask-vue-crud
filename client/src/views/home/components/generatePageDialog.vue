@@ -18,7 +18,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, ref } from 'vue'
 const dialogVisible = ref(false)
 let form = reactive({

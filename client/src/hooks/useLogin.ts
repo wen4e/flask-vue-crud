@@ -10,10 +10,39 @@ export function useLogin() {
   const SerialNo = ref('')
 
   // 登录方法
-  const login = async (callback) => {
+  interface LoginRequest {
+    headUserNo: string
+    headTrDate: string
+    headSerialNo: string
+    headReqDate: string
+    headReqTime: string
+    headReqSerialNo: string
+    headOrigDate: string
+    headOrigTime: string
+    headOrigSerialNo: string
+    language: string
+    orgNo: string
+    userNo: string
+    passwd: string
+    verificationCode: string
+    headChannel: string
+    headOrgNo: string
+    headCustNo: string
+    headMenuCode: string
+    headTrCode: string
+  }
+
+  interface LoginResponseData {
+    respType: string
+    [key: string]: any
+  }
+
+  type LoginCallback = () => void
+
+  const login = async (callback?: LoginCallback): Promise<void> => {
     SerialNo.value = getRandomString(22)
     try {
-      const response = await axios.post('/tbspApi/tbsp/bank/tool/login', {
+      const requestData: LoginRequest = {
         headUserNo: 'jres',
         headTrDate: '20250210',
         headSerialNo: SerialNo.value,
@@ -33,7 +62,9 @@ export function useLogin() {
         headCustNo: '000400000009999',
         headMenuCode: 'bank',
         headTrCode: 'tool',
-      })
+      }
+
+      const response = await axios.post<LoginResponseData>('/tbspApi/tbsp/bank/tool/login', requestData)
 
       // 直接更新loginInfo的值
       loginInfo.value = response.data
@@ -53,8 +84,6 @@ export function useLogin() {
     }
   }
 
-
-
   // 生成新的序列号
   const generateSerialNo = () => {
     SerialNo.value = getRandomString(22)
@@ -64,6 +93,6 @@ export function useLogin() {
   return {
     login,
     loginInfo,
-    generateSerialNo
+    generateSerialNo,
   }
 }

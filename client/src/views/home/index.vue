@@ -105,7 +105,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import generatePageDialog from './components/generatePageDialog.vue'
 import { ElMessage } from 'element-plus'
 import enums from '@/utils/menuCommon'
@@ -200,25 +200,25 @@ const copySql = (type) => {
   })
 }
 // 表格格式化函数
-const formatterMenuKind = ({ cellValue }) => {
+const formatterMenuKind = ({ cellValue }: { cellValue: keyof typeof enums.MENU_KIND_ENUM }) => {
   return enums.MENU_KIND_ENUM[cellValue]
 }
-const formatterMenuVerify = ({ cellValue }) => {
+const formatterMenuVerify = ({ cellValue }: { cellValue: keyof typeof enums.MENU_VERIFY_ENUM }) => {
   return enums.MENU_VERIFY_ENUM[cellValue]
 }
-const formatterMenuDisplay = ({ cellValue }) => {
+const formatterMenuDisplay = ({ cellValue }: { cellValue: keyof typeof enums.MENU_DISPLAY_ENUM }) => {
   return enums.MENU_DISPLAY_ENUM[cellValue]
 }
-const formatterMenuChecked = ({ cellValue }) => {
+const formatterMenuChecked = ({ cellValue }: { cellValue: keyof typeof enums.MENU_CHECKED_ENUM }) => {
   return enums.MENU_CHECKED_ENUM[cellValue]
 }
-const formatterMenuAttribute = ({ cellValue }) => {
+const formatterMenuAttribute = ({ cellValue }: { cellValue: keyof typeof enums.MENU_ATTRIBUTE_ENUM }) => {
   return enums.MENU_ATTRIBUTE_ENUM[cellValue]
 }
-const formatterMenuType = ({ cellValue }) => {
+const formatterMenuType = ({ cellValue }: { cellValue: keyof typeof enums.MENU_TYPE_ENUM }) => {
   return enums.MENU_TYPE_ENUM[cellValue]
 }
-const formatterFlag = ({ cellValue }) => {
+const formatterFlag = ({ cellValue }: { cellValue: keyof typeof enums.ENABLE_ENUM }): string => {
   return enums.ENABLE_ENUM[cellValue]
 }
 

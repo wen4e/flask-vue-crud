@@ -15,7 +15,7 @@
   <el-button @click="handlepage()" type="primary">生成页面</el-button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ElMessage } from 'element-plus'
 import { isCamelCase, formatCamelCase } from '@/utils/tools'
 import { ref, reactive } from 'vue'

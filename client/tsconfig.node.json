@@ -1,0 +1,10 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "include": ["vite.config.*", "vitest.config.*", "cypress.config.*"],
+  "compilerOptions": {
+    "composite": true,
+    "types": ["node"],
+    "noEmit": false, // 显式设置为不禁用输出
+    "outDir": "./dist-node" // 指定输出目录
+  }
+}
