@@ -108,11 +108,42 @@ export function useMenuList() {
       }
     }
   }
+  /**
+   * 递归收集 menuCode
+   * @param {Array} list  菜单列表（可能包含 children）
+   * @returns {Array<string>}  所有 menuCode 的扁平数组
+   */
+  /**
+   * 递归收集 menuCode
+   * @param {Array} list  菜单列表（可能包含 children）
+   * @returns {Array<string>}  所有 menuCode 的扁平数组
+   */
+  interface MenuTreeItem extends MenuItem {
+    children?: MenuTreeItem[]
+  }
+  /**
+   * 递归收集 menuCode
+   * @param {Array} list  菜单列表（可能包含 children）
+   * @returns {Array<string>}  所有 menuCode 的扁平数组
+   */
+  const getAllMenuCodes = (list: MenuTreeItem[]): string[] => {
+    return list.reduce((codes: string[], item: MenuTreeItem) => {
+      // 先把当前节点的 menuCode 加进去
+      codes.push(item.menuCode)
+      // 如果有 children，就递归收集
+      if (item.children && item.children.length) {
+        codes.push(...getAllMenuCodes(item.children))
+      }
+      return codes
+    }, [])
+  }
 
   // 搜索函数：根据条件过滤菜单数据
   const searchMenuList = (filterVal: string | null | undefined, $table?: TableRef) => {
     if (filterVal) {
-      menuList.value = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal.toLowerCase())))
+      const tmpMenuList = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal.toLowerCase())))
+      const result = getAllMenuCodes(tmpMenuList)
+      menuList.value = originalMenuList.filter((menu) => result.includes(menu.menuCode))
     } else {
       menuList.value = originalMenuList
       // 如果提供了表格引用，展开树节点
