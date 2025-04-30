@@ -3,7 +3,7 @@
     <!-- 搜索输入框 -->
     <el-form :inline="true" label-suffix="：">
       <el-form-item label="搜索">
-        <el-input v-model="filterName" class="w-[300px]" placeholder="菜单名称/菜单码/交易码/上级菜单编码" clearable @input="searchEvent"></el-input>
+        <el-input v-model.trim="filterName" class="w-[300px]" placeholder="菜单名称/菜单码/交易码/上级菜单编码" clearable @input="searchEvent"></el-input>
       </el-form-item>
       <el-form-item label="系统">
         <el-radio-group v-model="menuScope" @change="searchTable">
@@ -290,6 +290,8 @@ const getMenuList = async () => {
 }
 
 const searchTable = () => {
+  // 重置搜索条件
+  filterName.value = ''
   if (role.value === 'ALL') {
     isAdmin.value = ''
     isOperator.value = ''

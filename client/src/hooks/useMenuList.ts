@@ -20,8 +20,8 @@ export function useMenuList() {
   // 获取菜单列表
   interface MenuListParams {
     menuScope: string
-    isAdmin: boolean
-    isOperator: boolean
+    isAdmin: string
+    isOperator: string
     uppMenuCode: string | null
   }
 
