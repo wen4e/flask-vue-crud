@@ -5,7 +5,7 @@
       <el-input v-model.trim="formData.pageName" placeholder="请输入查询页面名称" maxlength="10" :clearable="true"></el-input>
     </el-form-item>
     <el-form-item label="">
-      <el-button @click="submit(0)" type="primary">页面名称</el-button>
+      <el-button @click="submit()" type="primary">页面名称</el-button>
     </el-form-item>
   </el-form>
   <div class="mt-4 mb-4">
@@ -17,7 +17,6 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { isCamelCase, formatCamelCase } from '@/utils/tools'
 import { ref, reactive } from 'vue'
 import api from '@/api'
 const result = ref('')
@@ -41,44 +40,26 @@ const formRules = {
   ],
 }
 
-// 提交转换请求
-const MAX_RETRIES = 5
-const RETRY_DELAY = 300 // 1秒延迟
-
-const submit = async (retryCount = 0) => {
+const submit = async () => {
   // 添加表单验证
   if (!formRef.value) return
-  await formRef.value.validate()
-  const prompt0 = `请将【${formData.pageName}】翻译成英文，并将结果转换成小写字母开头的驼峰格式（camelCase）并直接输出结果。不需要多余的内容，只需要返回英文单词的驼峰格式即可。`
 
-  const prompt1 = `你是一位专业的文本转换大语言模型，请按照以下规则将输入字符串【${formData.pageName}】转换成以小写开头的纯英文驼峰格式（camelCase）并直接输出结果：
-    1. 若输入中包含中文或其他语言字符，请尽量以合理的音译或译词来表达中文含义；
-    2. 只保留英文字母 (a-z, A-Z)，不包含数字、符号、空格等其他字符；
-    3. 输出必须是小写开头的驼峰格式，如 "questionRecord"、"userList"、"myHomePage" 等；
-    4. 最终只输出转换后的结果字符串，不要带任何附加说明或标点；
-    5. 若遇到无法直接翻译或音译的字符，也请尽量选取最接近的英文单词或简写。
-    **示例：**
-    - 输入：「问题记录」 => 输出：「questionRecord」
-    - 输入：「用户列表」 => 输出：「userList」
-    请将【${formData.pageName}】转换并仅输出处理结果。`
-  let prompt = prompt0
-  if (retryCount > 1) {
-    prompt = prompt1
-  }
-  const res = await api.post('/flaskApi/chat', { prompt })
-  const { data } = res
-  let formattedData = formatCamelCase(data)
-  if (isCamelCase(formattedData)) {
-    result.value = formattedData
-    return formattedData // 返回成功结果
-  }
-  if (retryCount < MAX_RETRIES) {
-    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY))
-    // 等待重试结果并返回
-    return await submit(retryCount + 1)
-  } else {
-    result.value = '转换失败，请检查输入内容'
-    return '转换失败，请检查输入内容'
+  const res = await api.post('/flaskApi/name', { input: formData.pageName })
+  // 假设 res.data 是 "{\"output\":\"userInput\"}" 这样的字符串
+  try {
+    const parsedData = JSON.parse(res.data)
+    if (parsedData && parsedData.output) {
+      result.value = parsedData.output
+    } else {
+      // 如果解析后的数据没有 output 属性，或者解析失败，可以设置一个默认值或错误提示
+      result.value = '无效的响应格式'
+      console.error('Parsed data does not contain output:', parsedData)
+    }
+  } catch (error) {
+    // JSON 解析失败处理
+    result.value = '解析响应失败'
+    console.error('Failed to parse JSON response:', error)
+    ElMessage.error('从服务器获取的响应格式不正确')
   }
 }
 

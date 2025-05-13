@@ -15,6 +15,9 @@ sys.path.append(server_dir)
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from utils.file_handler import TrCodeHandler, ExcelHandler
+from utils.openai_handler import OpenAIHandler
+from utils.code_handler import CodeHandler
+from utils.coze_handler import CozeHandler
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -73,6 +76,9 @@ def upload_excel():
 
 # 实例化处理器
 tr_handler = TrCodeHandler()
+openai_handler = OpenAIHandler()
+code_handler = CodeHandler()
+coze_handler = CozeHandler()
 
 
 @app.route("/trCode", methods=["GET"])
@@ -80,13 +86,6 @@ def all_trcode():
     """获取所有交易码"""
     response_object = {"status": "success", "data": tr_handler.read_tr_codes()}
     return jsonify(response_object)
-
-
-# 在现有import下添加
-from utils.openai_handler import OpenAIHandler
-
-# 在app实例化后添加
-openai_handler = OpenAIHandler()
 
 
 # chat接口
@@ -104,13 +103,6 @@ def chat():
         return jsonify({"error": result["error"]}), 500
 
 
-# 在现有import下添加
-from utils.code_handler import CodeHandler
-
-# 在app实例化后添加
-code_handler = CodeHandler()
-
-
 # 创建页面
 @app.route("/createPage", methods=["POST"])
 def create_page():
@@ -122,6 +114,36 @@ def create_page():
 
     if result["success"]:
         return jsonify({"message": "请求成功", "data": result["data"]})
+    else:
+        return jsonify({"error": result["error"]}), 500
+
+
+# 新增 /name 接口
+@app.route("/name", methods=["POST"])
+def name_workflow():
+    """
+    调用 Coze 工作流接口。
+    从请求体中获取 'input' 参数。
+    """
+    data = request.get_json()
+    if not data or "input" not in data:
+        return jsonify({"error": "缺少必要的 input 参数"}), 400
+
+    user_input = data["input"]
+    # 直接在代码中定义 workflow_id 和 app_id
+    workflow_id = "7502280447989121075"
+    app_id = "7502253112191860774"
+
+    result = coze_handler.run_workflow(
+        workflow_id=workflow_id, app_id=app_id, user_input=user_input
+    )
+
+    if result["success"]:
+        # 直接返回其 data 部分
+        data_to_return = result["data"]
+        if "debug_url" in data_to_return:
+            del data_to_return["debug_url"]
+        return jsonify(data_to_return)
     else:
         return jsonify({"error": result["error"]}), 500
 
