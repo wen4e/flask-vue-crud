@@ -19,14 +19,20 @@ class CozeHandler:
             "Content-Type": "application/json",
         }
 
-    def run_workflow(self, workflow_id: str, app_id: str, user_input: str):
+    def run_workflow(self, payload: dict):
         """
         运行 Coze 工作流。
 
         Args:
-            workflow_id (str): 工作流 ID。
-            app_id (str): 应用 ID。
-            user_input (str): 用户输入。
+            payload (dict): 包含工作流运行所需参数的完整对象，结构如下:
+                            {
+                                "workflow_id": "workflow_id_here",
+                                "app_id": "app_id_here",
+                                "parameters": {"input": "user_input_here"}
+                                ... (其他可能的 Coze 参数)
+                            }
+                            其中 "workflow_id", "app_id", 和 "parameters.input" 是必需的，
+                            这应由调用方 (如 app.py 中的接口) 进行校验。
 
         Returns:
             dict: 包含 API 调用结果的字典。
@@ -34,11 +40,7 @@ class CozeHandler:
                   失败时: {"success": False, "error": error_message}
         """
         url = f"{self.base_url}/workflow/run"
-        payload = {
-            "workflow_id": workflow_id,
-            "parameters": {"input": user_input},
-            "app_id": app_id,
-        }
+        # payload 参数现在直接由调用方提供
 
         try:
             response = requests.post(url, headers=self.headers, json=payload)

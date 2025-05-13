@@ -44,7 +44,11 @@ const submit = async () => {
   // 添加表单验证
   if (!formRef.value) return
 
-  const res = await api.post('/flaskApi/name', { input: formData.pageName })
+  const res = await api.post('/flaskApi/cozeApp', {
+    workflow_id: '7502280447989121075',
+    app_id: '7502253112191860774',
+    parameters: { input: formData.pageName },
+  })
   // 假设 res.data 是 "{\"output\":\"userInput\"}" 这样的字符串
   try {
     const parsedData = JSON.parse(res.data)

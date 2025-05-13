@@ -118,30 +118,31 @@ def create_page():
         return jsonify({"error": result["error"]}), 500
 
 
-# 新增 /name 接口
-@app.route("/name", methods=["POST"])
-def name_workflow():
+#  /cozeApp
+@app.route("/cozeApp", methods=["POST"])
+def coze_app_workflow():
     """
     调用 Coze 工作流接口。
-    从请求体中获取 'input' 参数。
+    从请求体中获取完整的 payload 对象。
+    payload 结构应为:
+    {
+        "workflow_id": "...",
+        "app_id": "...",
+        "parameters": {}
+    }
     """
-    data = request.get_json()
-    if not data or "input" not in data:
-        return jsonify({"error": "缺少必要的 input 参数"}), 400
+    payload = request.get_json()
 
-    user_input = data["input"]
-    # 直接在代码中定义 workflow_id 和 app_id
-    workflow_id = "7502280447989121075"
-    app_id = "7502253112191860774"
+    if not payload:
+        return jsonify({"error": "缺少请求体"}), 400
 
-    result = coze_handler.run_workflow(
-        workflow_id=workflow_id, app_id=app_id, user_input=user_input
-    )
+    # 直接将接收到的 payload 传递给 coze_handler
+    result = coze_handler.run_workflow(payload=payload)
 
     if result["success"]:
         # 直接返回其 data 部分
         data_to_return = result["data"]
-        if "debug_url" in data_to_return:
+        if isinstance(data_to_return, dict) and "debug_url" in data_to_return:
             del data_to_return["debug_url"]
         return jsonify(data_to_return)
     else:
