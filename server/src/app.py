@@ -17,9 +17,11 @@ from flask_cors import CORS
 from utils.file_handler import TrCodeHandler, ExcelHandler
 from utils.openai_handler import OpenAIHandler
 from utils.code_handler import CodeHandler
-from utils.coze_handler import CozeHandler
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# 从 routes 包导入 Blueprints
+from routes import coze_bp  # 导入 coze_bp
+
 
 # 实例化应用
 app = Flask(
@@ -78,10 +80,11 @@ def upload_excel():
 tr_handler = TrCodeHandler()
 openai_handler = OpenAIHandler()
 code_handler = CodeHandler()
-coze_handler = CozeHandler()
 
 
-@app.route("/trCode", methods=["GET"])
+@app.route(
+    "/trCode", methods=["GET"]
+)  # 这个路由可以保留在这里，或者也移到 tr_code_routes.py
 def all_trcode():
     """获取所有交易码"""
     response_object = {"status": "success", "data": tr_handler.read_tr_codes()}
@@ -89,7 +92,7 @@ def all_trcode():
 
 
 # chat接口
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["POST"])  # 这个路由可以保留在这里，或者移到 chat_routes.py
 def chat():
     data = request.get_json()
     if not data or "prompt" not in data:
@@ -104,7 +107,9 @@ def chat():
 
 
 # 创建页面
-@app.route("/createPage", methods=["POST"])
+@app.route(
+    "/createPage", methods=["POST"]
+)  # 这个路由可以保留在这里，或者移到 page_creation_routes.py
 def create_page():
     data = request.get_json()
     if not data or "pageName" not in data:
@@ -118,44 +123,15 @@ def create_page():
         return jsonify({"error": result["error"]}), 500
 
 
-#  /cozeApp
-@app.route("/cozeApp", methods=["POST"])
-def coze_app_workflow():
-    """
-    调用 Coze 工作流接口。
-    从请求体中获取完整的 payload 对象。
-    payload 结构应为:
-    {
-        "workflow_id": "...",
-        "app_id": "...",
-        "parameters": {}
-    }
-    """
-    payload = request.get_json()
-
-    if not payload:
-        return jsonify({"error": "缺少请求体"}), 400
-
-    # 直接将接收到的 payload 传递给 coze_handler
-    result = coze_handler.run_workflow(payload=payload)
-
-    if result["success"]:
-        # 直接返回其 data 部分
-        data_to_return = result["data"]
-        if isinstance(data_to_return, dict) and "debug_url" in data_to_return:
-            del data_to_return["debug_url"]
-        return jsonify(data_to_return)
-    else:
-        return jsonify({"error": result["error"]}), 500
+# 注册 Blueprints
+app.register_blueprint(coze_bp)  # coze_bp 的路由是 /cozeApp，没有统一前缀
 
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_frontend(path):
-    # 如果请求的路径在静态文件夹中（static/...）存在，就直接返回该文件
     if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
-    # 否则返回index.html，让Vue前端去处理路由
     return send_from_directory(app.static_folder, "index.html")
 
 
