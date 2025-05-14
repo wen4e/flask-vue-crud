@@ -13,7 +13,7 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 
 # 从 routes 包导入 Blueprints
-from routes import coze_bp, create_page_bp, chat_bp, file_upload_bp  # 导入 coze_bp
+from routes import coze_bp, create_page_bp, chat_bp, file_upload_bp, tr_code_bp
 
 
 # 实例化应用
@@ -40,6 +40,7 @@ app.register_blueprint(coze_bp)
 app.register_blueprint(create_page_bp)
 app.register_blueprint(chat_bp)
 app.register_blueprint(file_upload_bp)
+app.register_blueprint(tr_code_bp)
 
 
 @app.route("/", defaults={"path": ""})
