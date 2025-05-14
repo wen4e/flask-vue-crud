@@ -14,12 +14,11 @@ sys.path.append(server_dir)
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from utils.file_handler import TrCodeHandler, ExcelHandler
-from utils.openai_handler import OpenAIHandler
+from utils.file_handler import ExcelHandler
 
 
 # 从 routes 包导入 Blueprints
-from routes import coze_bp, create_page_bp  # 导入 coze_bp
+from routes import coze_bp, create_page_bp, chat_bp  # 导入 coze_bp
 
 
 # 实例化应用
@@ -75,38 +74,10 @@ def upload_excel():
     return jsonify({"error": "不允许的文件类型"}), 400
 
 
-# 实例化处理器
-tr_handler = TrCodeHandler()
-openai_handler = OpenAIHandler()
-
-
-@app.route(
-    "/trCode", methods=["GET"]
-)  # 这个路由可以保留在这里，或者也移到 tr_code_routes.py
-def all_trcode():
-    """获取所有交易码"""
-    response_object = {"status": "success", "data": tr_handler.read_tr_codes()}
-    return jsonify(response_object)
-
-
-# chat接口
-@app.route("/chat", methods=["POST"])  # 这个路由可以保留在这里，或者移到 chat_routes.py
-def chat():
-    data = request.get_json()
-    if not data or "prompt" not in data:
-        return jsonify({"error": "缺少必要的prompt参数"}), 400
-
-    result = openai_handler.chat_completion(data["prompt"])
-
-    if result["success"]:
-        return jsonify({"message": "请求成功", "data": result["data"]})
-    else:
-        return jsonify({"error": result["error"]}), 500
-
-
 # 注册 Blueprints
 app.register_blueprint(coze_bp)
 app.register_blueprint(create_page_bp)
+app.register_blueprint(chat_bp)
 
 
 @app.route("/", defaults={"path": ""})
