@@ -16,11 +16,10 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from utils.file_handler import TrCodeHandler, ExcelHandler
 from utils.openai_handler import OpenAIHandler
-from utils.code_handler import CodeHandler
 
 
 # 从 routes 包导入 Blueprints
-from routes import coze_bp  # 导入 coze_bp
+from routes import coze_bp, create_page_bp  # 导入 coze_bp
 
 
 # 实例化应用
@@ -79,7 +78,6 @@ def upload_excel():
 # 实例化处理器
 tr_handler = TrCodeHandler()
 openai_handler = OpenAIHandler()
-code_handler = CodeHandler()
 
 
 @app.route(
@@ -106,25 +104,9 @@ def chat():
         return jsonify({"error": result["error"]}), 500
 
 
-# 创建页面
-@app.route(
-    "/createPage", methods=["POST"]
-)  # 这个路由可以保留在这里，或者移到 page_creation_routes.py
-def create_page():
-    data = request.get_json()
-    if not data or "pageName" not in data:
-        return jsonify({"error": "缺少必要的pageName参数"}), 400
-
-    result = code_handler.create_page(data["pageName"])
-
-    if result["success"]:
-        return jsonify({"message": "请求成功", "data": result["data"]})
-    else:
-        return jsonify({"error": result["error"]}), 500
-
-
 # 注册 Blueprints
-app.register_blueprint(coze_bp)  # coze_bp 的路由是 /cozeApp，没有统一前缀
+app.register_blueprint(coze_bp)
+app.register_blueprint(create_page_bp)
 
 
 @app.route("/", defaults={"path": ""})
