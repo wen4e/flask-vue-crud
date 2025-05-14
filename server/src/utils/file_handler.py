@@ -61,7 +61,18 @@ class ExcelHandler:
     @staticmethod
     def process_sheet_data(df: pd.DataFrame, dto_count: int = DTO_COUNT) -> dict:
         """处理工作表DataFrame以提取接口参数并生成JSON模拟数据。"""
+        # 提取apiName和trCode
+        api_name = (
+            str(df.iloc[3, 1]).strip() if len(df) > 3 and len(df.columns) > 1 else ""
+        )
+        tr_code = (
+            str(df.iloc[2, 1]).strip() if len(df) > 2 and len(df.columns) > 1 else ""
+        )
+
+        # 创建包含apiName和trCode的完整结构
         result = {
+            "apiName": api_name,
+            "trCode": tr_code,
             "requestParams": {},
             "responseParams": {
                 "respCode": "000000000000",
@@ -71,6 +82,7 @@ class ExcelHandler:
                 "respType": "S",
             },
         }
+
         # 仅当 dto_count > 0 时初始化 dtos
         if dto_count > 0:
             result["responseParams"]["dtos"] = [{} for _ in range(dto_count)]
@@ -78,7 +90,7 @@ class ExcelHandler:
             result["responseParams"]["dtos"] = []
 
         mode = None  # 可以是 "request"、"response" 或 "dto"
-        header_found = False  # 在当前模式下找到“属性名”或“类型”后为True
+        header_found = False  # 在当前模式下找到"属性名"或"类型"后为True
 
         for _, row in df.iterrows():
             if row.empty or pd.isna(row.iloc[0]):  # 跳过空行
@@ -233,23 +245,11 @@ class ExcelHandler:
                 # 解析工作表时不使用标题行，以便我们可以根据单元格内容定义结构
                 df = xls.parse(sheet_name=sheet_name, header=None)
 
-                # —— 新增：从第4行第2列读取 apiName —— #
-                api_name = str(df.iloc[3, 1]).strip()
-                # —— 新增：从第3行第2列读取 trCode —— #
-                tr_code = str(df.iloc[2, 1]).strip()
-
-                # 原有解析逻辑
+                # 直接使用process_sheet_data返回的结果，不再需要单独提取apiName和trCode
                 json_data = ExcelHandler.process_sheet_data(df, ExcelHandler.DTO_COUNT)
 
-                # —— 新增：注入 apiName 和 trCode —— #
-                full_json = {
-                    "apiName": api_name,
-                    "trCode": tr_code,
-                    **json_data,  # 合并 requestParams 和 responseParams
-                }
-
                 save_result = ExcelHandler.save_to_json(
-                    full_json, sheet_name, excel_filename_stem
+                    json_data, sheet_name, excel_filename_stem
                 )
                 if not save_result["success"]:
                     return {
