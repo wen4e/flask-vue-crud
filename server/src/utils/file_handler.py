@@ -174,6 +174,54 @@ class ExcelHandler:
 
             xls = pd.ExcelFile(file_path, engine=engine)
 
+            # 处理第二个sheet，提取交易名称和交易码列，生成tr.json
+            if len(xls.sheet_names) > 1:
+                second_sheet = xls.parse(xls.sheet_names[1])
+                tr_data = []
+                if (
+                    "交易名称" in second_sheet.columns
+                    and "交易码" in second_sheet.columns
+                ):
+                    for _, row in second_sheet.iterrows():
+                        tr_name = row["交易名称"]
+                        tr_code = row["交易码"]
+                        # 仅添加非空的交易信息
+                        if pd.notna(tr_name) and pd.notna(tr_code):
+                            tr_data.append({"trName": tr_name, "trCode": tr_code})
+
+                # 追加保存交易信息到tr.json
+                target_dir = ExcelHandler.JSON_OUTPUT_DIR
+                json_path = os.path.join(target_dir, "tr.json")
+
+                # 如果文件存在，读取现有内容并合并
+                existing_tr_data = []
+                if os.path.exists(json_path):
+                    try:
+                        with open(json_path, "r", encoding="utf-8") as f:
+                            existing_tr_data = json.load(f)
+                    except Exception as e:
+                        return {
+                            "success": False,
+                            "error": f"Failed to read existing tr.json: {str(e)}",
+                        }
+
+                # 合并数据(通过trCode去重)
+                existing_tr_codes = set(item["trCode"] for item in existing_tr_data)
+                merged_tr_data = existing_tr_data.copy()
+
+                # 只添加不存在的交易码
+                for item in tr_data:
+                    if item["trCode"] not in existing_tr_codes:
+                        merged_tr_data.append(item)
+                        existing_tr_codes.add(item["trCode"])
+
+                # 保存合并后的数据
+                tr_save_result = ExcelHandler.save_to_json(merged_tr_data, "tr", "")
+                if not tr_save_result["success"]:
+                    return {
+                        "success": False,
+                        "error": f"Failed to save tr.json: {tr_save_result['error']}",
+                    }
             # 需要排除处理的工作表
             excluded_sheets = ("报文头说明", "接口目录")
             processed_files_count = 0
@@ -185,18 +233,30 @@ class ExcelHandler:
                 # 解析工作表时不使用标题行，以便我们可以根据单元格内容定义结构
                 df = xls.parse(sheet_name=sheet_name, header=None)
 
+                # —— 新增：从第4行第2列读取 apiName —— #
+                api_name = str(df.iloc[3, 1]).strip()
+                # —— 新增：从第3行第2列读取 trCode —— #
+                tr_code = str(df.iloc[2, 1]).strip()
+
+                # 原有解析逻辑
                 json_data = ExcelHandler.process_sheet_data(df, ExcelHandler.DTO_COUNT)
 
+                # —— 新增：注入 apiName 和 trCode —— #
+                full_json = {
+                    "apiName": api_name,
+                    "trCode": tr_code,
+                    **json_data,  # 合并 requestParams 和 responseParams
+                }
+
                 save_result = ExcelHandler.save_to_json(
-                    json_data, sheet_name, excel_filename_stem
+                    full_json, sheet_name, excel_filename_stem
                 )
                 if not save_result["success"]:
-                    # 如果一个工作表保存失败，我们可以停止或收集错误
-                    # 目前，返回遇到的第一个错误
                     return {
                         "success": False,
                         "error": f"Failed to save JSON for sheet {sheet_name}: {save_result['error']}",
                     }
+
                 processed_files_count += 1
 
             if processed_files_count == 0:
@@ -207,7 +267,6 @@ class ExcelHandler:
 
             return {
                 "success": True,
-                # 更新成功消息中的路径
                 "message": f"Successfully processed {processed_files_count} sheet(s). JSON files saved in '{ExcelHandler.JSON_OUTPUT_DIR}'.",
             }
         except Exception as e:
@@ -225,28 +284,14 @@ class ExcelHandler:
 
 
 # 获取data文件夹下的tr.json文件
-# 如果 tr.json 的来源或结构根据新的 Excel 处理逻辑发生变化，则此类可能需要调整。
-# 如果处理名为 "tr" 的工作表，则新逻辑将生成一个 tr.json。
 class TrCodeHandler:
     def __init__(self):
-        # 假设如果 tr.json 是由新逻辑生成的，它将位于以 excel 文件名命名的子文件夹中。
-        # 如果其生成路径是动态的，这可能需要一种更强大的方法来定位 tr.json。
-        # 目前，假设它可能直接位于 JSON_OUTPUT_DIR 或已知的子文件夹中。
-        # 这部分是推测性的，因为新逻辑并未明确创建顶层 tr.json。
-        # 如果 tr.json 是从名为 'tr' 的工作表（在 'example.xlsx' excel 文件中）生成的，
-        # 它将位于 .../json_output/example/tr.json
-        # 原始的 TrCodeHandler 在 server/src/data/tr.json 中查找
-        # 这需要澄清在新系统中如何期望找到/生成 tr.json。
-        # 目前，保留原始路径逻辑，但它可能与新的生成方式不一致。
         current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.file_path = os.path.join(current_dir, "data", "tr.json")  # 原始路径
+        self.file_path = os.path.join(current_dir, "data", "tr.json")
 
     def read_tr_codes(self):
         """读取所有交易码"""
         if not os.path.exists(self.file_path):
-            # 如果已知常见的 excel 名称（例如 "default"），则尝试在新的输出结构中查找它
-            # 如果需要，这是一个更强大的发现机制的占位符。
-            # 例如：self.file_path = os.path.join(ExcelHandler.JSON_OUTPUT_DIR, "some_excel_stem", "tr.json")
             return []
 
         try:
