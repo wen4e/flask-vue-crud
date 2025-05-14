@@ -1,8 +1,5 @@
-import uuid
 import os
 import sys
-from werkzeug.utils import secure_filename
-
 
 current_dir = os.path.dirname(os.path.abspath(__file__))  # => server/src
 server_dir = os.path.dirname(current_dir)  # => server
@@ -12,9 +9,8 @@ sys.path.append(current_dir)
 # 确保能找到 server/config.py
 sys.path.append(server_dir)
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, send_from_directory
 from flask_cors import CORS
-from utils.file_handler import ExcelHandler
 
 # 从 routes 包导入 Blueprints
 from routes import coze_bp, create_page_bp, chat_bp, file_upload_bp  # 导入 coze_bp
