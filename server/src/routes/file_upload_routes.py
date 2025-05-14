@@ -1,12 +1,11 @@
 import os
 import uuid
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, jsonify, request, current_app
 from werkzeug.utils import secure_filename
-from utils.file_handler import ExcelHandler
+from utils.file_handler import ExcelHandler  # 确保 ExcelHandler 可以被正确导入
 
-file_upload_bp = Blueprint(
-    "file_upload_bp", __name__
-)  # 没有统一的 url_prefix，因为原始路由是 /upload/excel
+# 创建 Blueprint 实例
+file_upload_bp = Blueprint("file_upload_bp", __name__)
 
 
 @file_upload_bp.route("/upload/excel", methods=["POST"])
@@ -20,24 +19,16 @@ def upload_excel():
 
     if file and ExcelHandler.allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        # UPLOAD_FOLDER 从 app.config 获取
-        upload_folder = current_app.config["UPLOAD_FOLDER"]
-        # 确保上传目录存在
-        if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
-
         unique_filename = f"{str(uuid.uuid4())}_{filename}"
-        filepath = os.path.join(upload_folder, unique_filename)
+        # 使用 current_app 来访问应用配置
+        filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], unique_filename)
 
         try:
             file.save(filepath)
-            result = ExcelHandler.read_excel(
-                filepath
-            )  # ExcelHandler 的方法是静态的或在此处实例化
+            result = ExcelHandler.read_excel(filepath)
 
             # 清理临时文件
-            if os.path.exists(filepath):
-                os.remove(filepath)
+            os.remove(filepath)
 
             if result["success"]:
                 return jsonify({"message": "文件上传成功", "data": result["data"]})
@@ -45,6 +36,7 @@ def upload_excel():
                 return jsonify({"error": result["error"]}), 500
 
         except Exception as e:
+            # 确保在发生异常时也尝试删除文件
             if os.path.exists(filepath):
                 os.remove(filepath)
             return jsonify({"error": f"处理文件时出错: {str(e)}"}), 500

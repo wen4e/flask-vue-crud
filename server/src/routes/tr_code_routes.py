@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 from utils.file_handler import TrCodeHandler  # 确保路径正确，或者已添加到 sys.path
 
 # 创建 Blueprint 实例，可以指定 URL 前缀
-tr_code_bp = Blueprint("tr_code_bp", __name__, url_prefix="/flaskApi")
+tr_code_bp = Blueprint("tr_code_bp", __name__)
 
 # 实例化相关的处理器
 # 如果处理器是无状态的或者其状态与应用实例无关，可以在此实例化
