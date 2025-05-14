@@ -18,20 +18,37 @@ def upload_excel():
         return jsonify({"error": "没有选择文件"}), 400
 
     if file and ExcelHandler.allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        unique_filename = f"{str(uuid.uuid4())}_{filename}"
+        original_filename = secure_filename(file.filename)
+        excel_filename_stem = os.path.splitext(original_filename)[
+            0
+        ]  # Get filename without extension
+
+        unique_suffix = str(uuid.uuid4())
+        # Keep original extension for saving temp file
+        _, file_extension = os.path.splitext(original_filename)
+        unique_temp_filename = f"{excel_filename_stem}_{unique_suffix}{file_extension}"
+
         # 使用 current_app 来访问应用配置
-        filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], unique_filename)
+        filepath = os.path.join(
+            current_app.config["UPLOAD_FOLDER"], unique_temp_filename
+        )
 
         try:
             file.save(filepath)
-            result = ExcelHandler.read_excel(filepath)
+            # Pass the excel_filename_stem for creating specific output subdirectories
+            result = ExcelHandler.read_excel(filepath, excel_filename_stem)
 
             # 清理临时文件
             os.remove(filepath)
 
             if result["success"]:
-                return jsonify({"message": "文件上传成功", "data": result["data"]})
+                # result["message"] will contain the success message from process_file
+                return jsonify(
+                    {
+                        "message": result.get("message", "文件处理成功"),
+                        "data": result.get("data"),
+                    }
+                )  # data might be null
             else:
                 return jsonify({"error": result["error"]}), 500
 
