@@ -69,7 +69,7 @@ class ExcelHandler:
             str(df.iloc[2, 1]).strip() if len(df) > 2 and len(df.columns) > 1 else ""
         )
 
-        # 创建包含apiName和trCode的完整结构
+        # 创建基本结构
         result = {
             "apiName": api_name,
             "trCode": tr_code,
@@ -83,57 +83,110 @@ class ExcelHandler:
             },
         }
 
-        # 仅当 dto_count > 0 时初始化 dtos
-        if dto_count > 0:
-            result["responseParams"]["dtos"] = [{} for _ in range(dto_count)]
-        else:
-            result["responseParams"]["dtos"] = []
+        # 第一步：扫描表格，识别所有DTO类型和它们的关系
+        dto_types = {}  # 存储所有识别到的DTO类型
+        dto_relations = {}  # 存储DTO之间的关系
+        dto_fields = {}  # 存储每个DTO类型的字段
+        dto_list_fields = {}  # 存储哪些字段是List类型，以及包含的DTO类型
+        bizpage_responses = {}  # 存储BizPageResponse及其泛型类型
 
-        mode = None  # 可以是 "request"、"response" 或 "dto"
-        header_found = False  # 在当前模式下找到"属性名"或"类型"后为True
-        dto_class_names = []  # 存储所有DTO类名，包括泛型参数
-        skip_row_markers = ["extends", "<", ">"]  # 标记需要跳过处理的行
+        import re
+
+        # 首先扫描表格找出所有DTO类型和它们之间的关系
+        for _, row in df.iterrows():
+            if row.empty or pd.isna(row.iloc[0]):
+                continue
+
+            row_as_string = " ".join([str(cell) for cell in row if not pd.isna(cell)])
+
+            # 寻找DTO定义行 - 特别关注BizPageResponse模式
+            if "extends" in row_as_string:
+                # 识别BizPageResponse模式
+                bizpage_match = re.search(
+                    r"extends\s+BizPageResponse\s*<\s*(\w+DTO\w*)\s*>", row_as_string
+                )
+                if bizpage_match:
+                    response_class_match = re.search(
+                        r"(\w+Resp)\s+extends", row_as_string
+                    )
+                    if response_class_match:
+                        response_class = response_class_match.group(1)
+                        dto_class = bizpage_match.group(1)
+                        dto_types[dto_class] = True
+                        dto_fields[dto_class] = {}
+                        bizpage_responses[response_class] = dto_class
+                        dto_list_fields["dtos"] = dto_class  # 自动添加dtos字段
+
+                # 提取一般DTO类名
+                dto_matches = re.findall(r"(\w+DTO\w*)", row_as_string)
+                if dto_matches:
+                    for dto_name in dto_matches:
+                        dto_types[dto_name] = True
+                        if dto_name not in dto_fields:
+                            dto_fields[dto_name] = {}
+
+            # 寻找List类型字段
+            if "List<" in row_as_string:
+                field_name = str(row.iloc[0]).strip()
+                if field_name and field_name not in ["类型", "属性名"]:
+                    generic_match = re.search(r"List\s*<\s*(\w+)\s*>", row_as_string)
+                    if generic_match:
+                        list_type = generic_match.group(1)
+                        # 检查是否为T类型(泛型)
+                        if list_type == "T" and field_name == "dtos":
+                            # 不需要添加，因为会在BizPageResponse处理
+                            pass
+                        elif list_type in dto_types:
+                            dto_list_fields[field_name] = list_type
+                        else:
+                            # 处理非DTO类型的List，如List<String>
+                            pass
+
+        # 如果没有识别到任何DTO类型，使用默认处理
+        if not dto_types:
+            # 原始简单处理逻辑...
+            return result
+
+        # 第二步：处理表格内容，提取字段属性
+        mode = None  # "request" 或 "response"
+        current_dto = None
+        header_found = False
 
         for _, row in df.iterrows():
-            if row.empty or pd.isna(row.iloc[0]):  # 跳过空行
+            if row.empty or pd.isna(row.iloc[0]):
                 continue
 
             first_cell_value = str(row.iloc[0]).strip()
             row_as_string = " ".join([str(cell) for cell in row if not pd.isna(cell)])
 
-            # 检查是否为类型定义行，提取DTO类名
-            if "DTO" in row_as_string:
-                # 提取所有DTO类名，包括泛型参数
-                import re
-
-                dto_matches = re.findall(r"(\w+DTO\w*)", row_as_string)
-                dto_class_names.extend(dto_matches)
-
-                # 如果这行是类型定义行，判断应该进入哪种模式
-                if "DTO" in first_cell_value and mode == "response":
-                    mode = "dto"
+            # 检查是否进入新的DTO定义区域
+            for dto_name in dto_types:
+                if (
+                    dto_name in row_as_string
+                    and "class" not in row_as_string
+                    and "extends" not in row_as_string
+                ):
+                    current_dto = dto_name
                     header_found = False
-
-                # 如果行中包含类型定义标记，则跳过此行处理
-                if any(marker in row_as_string for marker in skip_row_markers):
-                    continue
+                    break
 
             if first_cell_value == "入参":
                 mode = "request"
+                current_dto = None
                 header_found = False
                 continue
             if first_cell_value == "返回":
                 mode = "response"
+                current_dto = None
                 header_found = False
                 continue
 
-            if mode and not header_found:
-                # 检查当前行是否为标题行
+            if (mode or current_dto) and not header_found:
                 if first_cell_value in ("属性名", "类型"):
                     header_found = True
-                continue  # 在当前模式下找到标题之前继续跳过
+                continue
 
-            if not mode or not header_found:  # 如果未处于某种模式或尚未找到标题，则跳过
+            if not (mode or current_dto) or not header_found:
                 continue
 
             key_name = first_cell_value
@@ -141,38 +194,49 @@ class ExcelHandler:
             if len(row) > 1 and not pd.isna(row.iloc[1]):
                 data_type = str(row.iloc[1]).strip()
 
-            if not key_name or not data_type:  # 如果 key_name 或 data_type 缺失，则跳过
+            if not key_name or not data_type or key_name in ["属性名", "类型"]:
                 continue
 
-            # 跳过特殊字段，包括属性名、所有DTO类名和dtos字段
-            if (
-                key_name in ["属性名", "类型", "dtos"]
-                or any(dto_name in key_name for dto_name in dto_class_names)
-                or "DTO" in key_name
-            ):
-                continue
-
+            # 生成模拟数据
             mock_value = ExcelHandler.generate_mock_data(data_type, key_name)
 
-            if mode == "request":
+            if current_dto and key_name not in dto_list_fields:
+                dto_fields[current_dto][key_name] = mock_value
+            elif mode == "request":
                 result["requestParams"][key_name] = mock_value
-            elif mode == "response":
-                if key_name != "dtos":  # dtos 是一个特殊键，单独处理
-                    result["responseParams"][key_name] = mock_value
-            elif mode == "dto":
-                if result["responseParams"]["dtos"]:  # 检查 dtos 列表是否存在且不为空
-                    for dto_item in result["responseParams"]["dtos"]:
-                        dto_item[key_name] = mock_value
+            elif mode == "response" and key_name not in dto_list_fields:
+                result["responseParams"][key_name] = mock_value
 
-        # 如果 dtos 已初始化但所有项都为空，则进行清理
-        if "dtos" in result["responseParams"] and all(
-            not item for item in result["responseParams"]["dtos"]
-        ):
-            result["responseParams"].pop("dtos", None)
-        elif (
-            "dtos" in result["responseParams"] and not result["responseParams"]["dtos"]
-        ):  # 如果初始化为空列表
-            result["responseParams"].pop("dtos", None)
+        # 第三步：构建嵌套的响应结构
+        # 处理主响应结构中的dtos字段，确保不为null
+        if "dtos" in dto_list_fields and dto_fields.get(dto_list_fields["dtos"]):
+            dto_type = dto_list_fields["dtos"]
+            dtos = []
+            for _ in range(min(dto_count, 5)):  # 限制数量，避免过大
+                dto_obj = dto_fields[dto_type].copy()
+                # 处理可能的嵌套字段
+                for field, field_type in dto_list_fields.items():
+                    if field != "dtos" and field_type in dto_fields:
+                        nested_items = []
+                        for _ in range(2):  # 嵌套列表默认2个项目
+                            nested_items.append(dto_fields[field_type].copy())
+                        dto_obj[field] = nested_items
+                dtos.append(dto_obj)
+            result["responseParams"]["dtos"] = dtos
+
+        # 处理其他List字段
+        for field_name, field_type in dto_list_fields.items():
+            if field_name != "dtos" and field_type in dto_fields:
+                items = []
+                for _ in range(2):  # 默认创建2个项目
+                    dto_item = dto_fields[field_type].copy()
+                    items.append(dto_item)
+
+                # 检查字段位置
+                if current_dto and field_name in dto_fields[current_dto]:
+                    dto_fields[current_dto][field_name] = items
+                else:
+                    result["responseParams"][field_name] = items
 
         return result
 
