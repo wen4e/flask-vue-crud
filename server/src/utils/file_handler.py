@@ -91,12 +91,32 @@ class ExcelHandler:
 
         mode = None  # 可以是 "request"、"response" 或 "dto"
         header_found = False  # 在当前模式下找到"属性名"或"类型"后为True
+        dto_class_names = []  # 存储所有DTO类名，包括泛型参数
+        skip_row_markers = ["extends", "<", ">"]  # 标记需要跳过处理的行
 
         for _, row in df.iterrows():
             if row.empty or pd.isna(row.iloc[0]):  # 跳过空行
                 continue
 
             first_cell_value = str(row.iloc[0]).strip()
+            row_as_string = " ".join([str(cell) for cell in row if not pd.isna(cell)])
+
+            # 检查是否为类型定义行，提取DTO类名
+            if "DTO" in row_as_string:
+                # 提取所有DTO类名，包括泛型参数
+                import re
+
+                dto_matches = re.findall(r"(\w+DTO\w*)", row_as_string)
+                dto_class_names.extend(dto_matches)
+
+                # 如果这行是类型定义行，判断应该进入哪种模式
+                if "DTO" in first_cell_value and mode == "response":
+                    mode = "dto"
+                    header_found = False
+
+                # 如果行中包含类型定义标记，则跳过此行处理
+                if any(marker in row_as_string for marker in skip_row_markers):
+                    continue
 
             if first_cell_value == "入参":
                 mode = "request"
@@ -106,17 +126,10 @@ class ExcelHandler:
                 mode = "response"
                 header_found = False
                 continue
-            if "DTO" in first_cell_value and mode == "response":  # DTO 是响应的一部分
-                mode = "dto"
-                header_found = False
-                continue
 
             if mode and not header_found:
                 # 检查当前行是否为标题行
-                if first_cell_value in (
-                    "属性名",
-                    "类型",
-                ):  # 假设这些是标题指示符
+                if first_cell_value in ("属性名", "类型"):
                     header_found = True
                 continue  # 在当前模式下找到标题之前继续跳过
 
@@ -129,6 +142,14 @@ class ExcelHandler:
                 data_type = str(row.iloc[1]).strip()
 
             if not key_name or not data_type:  # 如果 key_name 或 data_type 缺失，则跳过
+                continue
+
+            # 跳过特殊字段，包括属性名、所有DTO类名和dtos字段
+            if (
+                key_name in ["属性名", "类型", "dtos"]
+                or any(dto_name in key_name for dto_name in dto_class_names)
+                or "DTO" in key_name
+            ):
                 continue
 
             mock_value = ExcelHandler.generate_mock_data(data_type, key_name)
