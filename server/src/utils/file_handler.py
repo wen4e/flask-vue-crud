@@ -136,11 +136,12 @@ class ExcelHandler:
                         if list_type == "T" and field_name == "dtos":
                             # 不需要添加，因为会在BizPageResponse处理
                             pass
-                        elif list_type in dto_types:
+                        elif list_type.endswith("DTO") or list_type in dto_types:
                             dto_list_fields[field_name] = list_type
-                        else:
-                            # 处理非DTO类型的List，如List<String>
-                            pass
+                            # 确保此DTO类型被记录
+                            dto_types[list_type] = True
+                            if list_type not in dto_fields:
+                                dto_fields[list_type] = {}
 
         # 如果没有识别到任何DTO类型，使用默认处理
         if not dto_types:
@@ -194,48 +195,103 @@ class ExcelHandler:
             if len(row) > 1 and not pd.isna(row.iloc[1]):
                 data_type = str(row.iloc[1]).strip()
 
-            if not key_name or not data_type or key_name in ["属性名", "类型"]:
+            if not key_name or key_name in ["属性名", "类型"]:
                 continue
+
+            # 检查是否为List类型
+            if data_type and "List<" in data_type:
+                generic_match = re.search(r"List\s*<\s*(\w+)\s*>", data_type)
+                if generic_match:
+                    list_type = generic_match.group(1)
+                    if list_type.endswith("DTO") or list_type in dto_types:
+                        dto_list_fields[key_name] = list_type
+                        # 确保DTO类型被记录
+                        dto_types[list_type] = True
+                        if list_type not in dto_fields:
+                            dto_fields[list_type] = {}
 
             # 生成模拟数据
             mock_value = ExcelHandler.generate_mock_data(data_type, key_name)
 
-            if current_dto and key_name not in dto_list_fields:
+            # 根据上下文添加字段
+            if current_dto:
                 dto_fields[current_dto][key_name] = mock_value
             elif mode == "request":
                 result["requestParams"][key_name] = mock_value
             elif mode == "response" and key_name not in dto_list_fields:
                 result["responseParams"][key_name] = mock_value
 
+        # 新增：递归构建DTO对象的函数
+        def build_dto_object(dto_type, visited=None, depth=0):
+            """递归构建DTO对象，包括其中的嵌套字段"""
+            if visited is None:
+                visited = set()
+
+            # 防止无限递归
+            if depth > 5 or dto_type in visited or dto_type not in dto_fields:
+                return {}
+
+            # 防止循环引用
+            visited.add(dto_type)
+
+            # 复制基本字段
+            dto_obj = dto_fields[dto_type].copy()
+
+            # 处理此DTO中的所有List类型字段
+            for field_name, field_value in list(dto_obj.items()):
+                if field_name in dto_list_fields:
+                    list_item_type = dto_list_fields[field_name]
+                    if list_item_type in dto_types:
+                        # 生成嵌套列表
+                        nested_items = []
+                        for _ in range(2):  # 每个列表默认生成2个项目
+                            nested_dto = build_dto_object(
+                                list_item_type, visited.copy(), depth + 1
+                            )
+                            if nested_dto:  # 只添加非空对象
+                                nested_items.append(nested_dto)
+                        if nested_items:
+                            dto_obj[field_name] = nested_items
+
+            return dto_obj
+
         # 第三步：构建嵌套的响应结构
-        # 处理主响应结构中的dtos字段，确保不为null
-        if "dtos" in dto_list_fields and dto_fields.get(dto_list_fields["dtos"]):
+        # 处理主响应结构中的dtos字段
+        if "dtos" in dto_list_fields and dto_list_fields["dtos"] in dto_types:
             dto_type = dto_list_fields["dtos"]
             dtos = []
-            for _ in range(min(dto_count, 5)):  # 限制数量，避免过大
-                dto_obj = dto_fields[dto_type].copy()
-                # 处理可能的嵌套字段
-                for field, field_type in dto_list_fields.items():
-                    if field != "dtos" and field_type in dto_fields:
-                        nested_items = []
-                        for _ in range(2):  # 嵌套列表默认2个项目
-                            nested_items.append(dto_fields[field_type].copy())
-                        dto_obj[field] = nested_items
-                dtos.append(dto_obj)
-            result["responseParams"]["dtos"] = dtos
+            for _ in range(min(dto_count, 5)):  # 限制生成数量
+                dto_obj = build_dto_object(dto_type)
+                if dto_obj:  # 只添加非空对象
+                    dtos.append(dto_obj)
+            if dtos:
+                result["responseParams"]["dtos"] = dtos
 
-        # 处理其他List字段
-        for field_name, field_type in dto_list_fields.items():
-            if field_name != "dtos" and field_type in dto_fields:
+        # 处理响应中的其他顶级List字段
+        for field_name, list_item_type in dto_list_fields.items():
+            # 跳过已处理的dtos字段
+            if field_name == "dtos":
+                continue
+
+            # 检查字段是否属于任何DTO（非顶级字段）
+            is_dto_field = False
+            for dto in dto_fields.values():
+                if field_name in dto:
+                    is_dto_field = True
+                    break
+
+            # 如果不是DTO的字段，则是顶级字段，需要直接添加到响应中
+            if (
+                not is_dto_field
+                and list_item_type in dto_types
+                and field_name not in result["responseParams"]
+            ):
                 items = []
-                for _ in range(2):  # 默认创建2个项目
-                    dto_item = dto_fields[field_type].copy()
-                    items.append(dto_item)
-
-                # 检查字段位置
-                if current_dto and field_name in dto_fields[current_dto]:
-                    dto_fields[current_dto][field_name] = items
-                else:
+                for _ in range(min(3, dto_count)):  # 默认生成3个项目
+                    dto_item = build_dto_object(list_item_type)
+                    if dto_item:
+                        items.append(dto_item)
+                if items:
                     result["responseParams"][field_name] = items
 
         return result
