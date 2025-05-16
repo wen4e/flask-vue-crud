@@ -59,7 +59,7 @@ class ExcelHandler:
         return None
 
     @staticmethod
-    def process_sheet_data(df: pd.DataFrame, dto_count: int = DTO_COUNT) -> dict:
+    def process_sheet_data(df: pd.DataFrame, dto_count: int = 15) -> dict:
         """处理工作表DataFrame以提取接口参数并生成JSON模拟数据。"""
         # 提取apiName和trCode
         api_name = (
@@ -88,16 +88,30 @@ class ExcelHandler:
         dto_relations = {}  # 存储DTO之间的关系
         dto_fields = {}  # 存储每个DTO类型的字段
         dto_list_fields = {}  # 存储哪些字段是List类型，以及包含的DTO类型
+        dto_parent_fields = {}  # 存储DTO类型与其父DTO的关系及字段名
         bizpage_responses = {}  # 存储BizPageResponse及其泛型类型
+        current_dto_context = None  # 当前正在处理的DTO上下文
 
         import re
 
         # 首先扫描表格找出所有DTO类型和它们之间的关系
-        for _, row in df.iterrows():
+        for i, row in df.iterrows():
             if row.empty or pd.isna(row.iloc[0]):
                 continue
 
             row_as_string = " ".join([str(cell) for cell in row if not pd.isna(cell)])
+
+            # 识别DTO类型标题行（例如AcctBlanceBankTotalDTO）
+            if re.search(r"^[A-Za-z]+[A-Za-z0-9]*DTO\b", row_as_string, re.IGNORECASE):
+                dto_match = re.search(
+                    r"^([A-Za-z]+[A-Za-z0-9]*DTO)\b", row_as_string, re.IGNORECASE
+                )
+                if dto_match:
+                    current_dto_context = dto_match.group(1)
+                    if current_dto_context not in dto_types:
+                        dto_types[current_dto_context] = True
+                        dto_fields[current_dto_context] = {}
+                    continue
 
             # 寻找DTO定义行 - 特别关注BizPageResponse模式
             if "extends" in row_as_string:
@@ -125,23 +139,30 @@ class ExcelHandler:
                         if dto_name not in dto_fields:
                             dto_fields[dto_name] = {}
 
-            # 寻找List类型字段
+            # 寻找List类型字段，记录DTO间的层级关系
             if "List<" in row_as_string:
                 field_name = str(row.iloc[0]).strip()
                 if field_name and field_name not in ["类型", "属性名"]:
                     generic_match = re.search(r"List\s*<\s*(\w+)\s*>", row_as_string)
                     if generic_match:
                         list_type = generic_match.group(1)
-                        # 检查是否为T类型(泛型)
-                        if list_type == "T" and field_name == "dtos":
-                            # 不需要添加，因为会在BizPageResponse处理
-                            pass
-                        elif list_type.endswith("DTO") or list_type in dto_types:
+                        # 检查是否为非T类型(具体DTO类型)
+                        if list_type != "T" and (
+                            list_type.endswith("DTO") or list_type in dto_types
+                        ):
                             dto_list_fields[field_name] = list_type
                             # 确保此DTO类型被记录
                             dto_types[list_type] = True
                             if list_type not in dto_fields:
                                 dto_fields[list_type] = {}
+
+                            # 记录字段所属的DTO上下文
+                            if current_dto_context:
+                                if list_type not in dto_parent_fields:
+                                    dto_parent_fields[list_type] = []
+                                dto_parent_fields[list_type].append(
+                                    {"parent": current_dto_context, "field": field_name}
+                                )
 
         # 如果没有识别到任何DTO类型，使用默认处理
         if not dto_types:
@@ -210,6 +231,14 @@ class ExcelHandler:
                         if list_type not in dto_fields:
                             dto_fields[list_type] = {}
 
+                        # 记录父子DTO关系
+                        if current_dto:
+                            if list_type not in dto_parent_fields:
+                                dto_parent_fields[list_type] = []
+                            dto_parent_fields[list_type].append(
+                                {"parent": current_dto, "field": key_name}
+                            )
+
             # 生成模拟数据
             mock_value = ExcelHandler.generate_mock_data(data_type, key_name)
 
@@ -221,8 +250,8 @@ class ExcelHandler:
             elif mode == "response" and key_name not in dto_list_fields:
                 result["responseParams"][key_name] = mock_value
 
-        # 新增：递归构建DTO对象的函数
-        def build_dto_object(dto_type, visited=None, depth=0):
+        # 递归构建DTO对象的函数，增强版
+        def build_dto_object(dto_type, visited=None, depth=0, parent_context=None):
             """递归构建DTO对象，包括其中的嵌套字段"""
             if visited is None:
                 visited = set()
@@ -237,21 +266,47 @@ class ExcelHandler:
             # 复制基本字段
             dto_obj = dto_fields[dto_type].copy()
 
-            # 处理此DTO中的所有List类型字段
+            # 处理此DTO中的List类型字段
             for field_name, field_value in list(dto_obj.items()):
                 if field_name in dto_list_fields:
                     list_item_type = dto_list_fields[field_name]
                     if list_item_type in dto_types:
                         # 生成嵌套列表
                         nested_items = []
-                        for _ in range(2):  # 每个列表默认生成2个项目
+                        for _ in range(
+                            min(3, dto_count)
+                        ):  # 每个列表默认生成3个项目，不超过dto_count
                             nested_dto = build_dto_object(
-                                list_item_type, visited.copy(), depth + 1
+                                list_item_type,
+                                visited.copy(),
+                                depth + 1,
+                                {"dto": dto_type, "field": field_name},
                             )
                             if nested_dto:  # 只添加非空对象
                                 nested_items.append(nested_dto)
                         if nested_items:
                             dto_obj[field_name] = nested_items
+
+            # 特殊处理：查找该DTO类型是否有子DTO关系未在字段中体现
+            # 例如AcctBlanceBankTotalDTO应该包含dtos字段(List<DepositBalDTO>)
+            for child_dto, parent_info_list in dto_parent_fields.items():
+                for parent_info in parent_info_list:
+                    if parent_info["parent"] == dto_type:
+                        field_name = parent_info["field"]
+                        # 如果该字段还未被处理，添加它
+                        if field_name not in dto_obj:
+                            nested_items = []
+                            for _ in range(min(3, dto_count)):
+                                nested_dto = build_dto_object(
+                                    child_dto,
+                                    visited.copy(),
+                                    depth + 1,
+                                    {"dto": dto_type, "field": field_name},
+                                )
+                                if nested_dto:
+                                    nested_items.append(nested_dto)
+                            if nested_items:
+                                dto_obj[field_name] = nested_items
 
             return dto_obj
 
@@ -270,7 +325,7 @@ class ExcelHandler:
         # 处理响应中的其他顶级List字段
         for field_name, list_item_type in dto_list_fields.items():
             # 跳过已处理的dtos字段
-            if field_name == "dtos":
+            if field_name == "dtos" and "dtos" in result["responseParams"]:
                 continue
 
             # 检查字段是否属于任何DTO（非顶级字段）
