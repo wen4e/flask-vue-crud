@@ -4,7 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "types": ["node"],
-    "noEmit": false, // 显式设置为不禁用输出
-    "outDir": "./dist-node" // 指定输出目录
+    "noEmit": true, // 修改为 true，这样可以使用 allowImportingTsExtensions
+    "allowImportingTsExtensions": true // 启用此选项以允许导入 .ts 扩展名
   }
 }

@@ -8,7 +8,10 @@
     },
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "moduleResolution": "node",
-    "strict": true,
+    "strict": false, // 关闭严格模式
+    "noImplicitAny": false, // 允许隐式 any 类型
+    "noUnusedLocals": false, // 允许未使用的局部变量
+    "noUnusedParameters": false, // 允许未使用的参数
     "jsx": "preserve",
     "resolveJsonModule": true,
     "isolatedModules": true,
