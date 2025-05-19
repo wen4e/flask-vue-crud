@@ -32,9 +32,7 @@ def coze_app_workflow():
 
     if result["success"]:
         # 直接返回其 data 部分
-        data_to_return = result["data"]
-        if isinstance(data_to_return, dict) and "debug_url" in data_to_return:
-            del data_to_return["debug_url"]
+        data_to_return = result
         return jsonify(data_to_return)
     else:
         return jsonify({"error": result["error"]}), 500
