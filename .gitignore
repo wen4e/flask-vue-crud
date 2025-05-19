@@ -8,3 +8,4 @@ __pycache__
 /server/src/static
 /server/src/data
 /server/src/utils/config.py
+/code/
