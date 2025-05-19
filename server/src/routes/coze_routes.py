@@ -31,8 +31,6 @@ def coze_app_workflow():
     result = coze_handler.run_workflow(payload=payload)
 
     if result["success"]:
-        # 直接返回其 data 部分
-        data_to_return = result
-        return jsonify(data_to_return)
+        return jsonify(result)
     else:
         return jsonify({"error": result["error"]}), 500
