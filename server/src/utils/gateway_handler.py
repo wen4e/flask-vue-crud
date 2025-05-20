@@ -36,6 +36,19 @@ class GatewayHandler:
         data = self._read_gateways()
         return data.get("list", [])
 
+    def get_default_gateway(self) -> str:
+        """获取默认网关配置"""
+        data = self._read_gateways()
+        # 如果存在 default 键且其值是一个包含 value 的字典，则返回该值
+        if (
+            "default" in data
+            and isinstance(data["default"], dict)
+            and "value" in data["default"]
+        ):
+            return data["default"]["value"]
+        # 如果没有找到默认值，返回空字符串
+        return ""
+
     def add_gateway(self, gateway: Dict[str, str]) -> bool:
         """添加新网关配置"""
         # 验证必要字段

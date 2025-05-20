@@ -15,6 +15,13 @@ def query_gateways():
     return jsonify({"success": True, "data": gateways})
 
 
+@gateway_bp.route("/gateway/defaultQuery", methods=["GET"])
+def query_default_gateway():
+    """获取默认网关配置"""
+    default_gateway = gateway_handler.get_default_gateway()
+    return jsonify({"success": True, "data": default_gateway})
+
+
 @gateway_bp.route("/gateway/add", methods=["POST"])
 def add_gateway():
     """添加新网关配置"""
