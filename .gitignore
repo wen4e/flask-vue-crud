@@ -6,7 +6,7 @@ __pycache__
 /server/dist
 /server/build
 /server/src/static
-/server/src/data
+/server/src/data/*
 !/server/src/data/gateway.json
 /server/src/utils/config.py
 /code/
