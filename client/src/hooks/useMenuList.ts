@@ -41,7 +41,7 @@ export function useMenuList() {
     loading.value = true
 
     try {
-      const response = await axios.post('/tbspApi/tbsp/tool-pageMenu', {
+      const response = await axios.post('/flaskApi/tbspApi/tbsp/tool-pageMenu', {
         headUserNo: loginInfo.value.userId,
         headTrDate: '20250210',
         headSerialNo: SerialNo,

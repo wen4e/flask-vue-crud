@@ -44,7 +44,7 @@ const submit = async () => {
   // 添加表单验证
   if (!formRef.value) return
 
-  const res = await api.post('/flaskApi/cozeApp', {
+  const res = await api.post('/cozeApp', {
     workflow_id: '7502280447989121075',
     app_id: '7502253112191860774',
     parameters: { input: formData.pageName },
@@ -73,7 +73,7 @@ const handlepage = () => {
     ElMessage.error('请先转换页面名称')
     return
   }
-  api.post('/flaskApi/createPage', { pageName: result.value }).then((res) => {
+  api.post('/createPage', { pageName: result.value }).then((res) => {
     console.log(res)
   })
 }

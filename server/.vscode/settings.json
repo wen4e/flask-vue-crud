@@ -1,0 +1,10 @@
+{
+  "python.analysis.extraPaths": ["./env/lib/python3.13/site-packages"],
+  // 默认用 2 个空格
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  }
+}

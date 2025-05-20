@@ -9,35 +9,27 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
   },
   css: {
     preprocessorOptions: {
       scss: {
         api: 'modern',
-        silenceDeprecations: ["legacy-js-api"]
-      }
+        silenceDeprecations: ['legacy-js-api'],
+      },
     },
     postcss: {
-      plugins: [
-        tailwindcss,
-        autoprefixer
-      ]
-    }
+      plugins: [tailwindcss, autoprefixer],
+    },
   },
   server: {
     proxy: {
-      '/tbspApi': {
-        target: 'http://10.20.29.157:7150',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/tbspApi/, '')
-      },
       '/flaskApi': {
         target: 'http://127.0.0.1:5001',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/flaskApi/, '')
-      }
-    }
-  }
+        rewrite: (path) => path.replace(/^\/flaskApi/, ''),
+      },
+    },
+  },
 })

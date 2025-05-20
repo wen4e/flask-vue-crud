@@ -69,7 +69,7 @@ export function useLogin() {
         headTrCode: 'tool',
       }
 
-      const response = await axios.post<LoginResponseData>('/tbspApi/tbsp/bank/tool/login', requestData)
+      const response = await axios.post<LoginResponseData>('/flaskApi/tbspApi/tbsp/bank/tool/login', requestData)
 
       // 直接更新loginInfo的值
       loginInfo.value = response.data
