@@ -27,6 +27,11 @@
           <el-button type="primary">上传Excel</el-button>
         </el-upload>
       </el-form-item>
+      <el-form-item label="网关地址">
+        <el-select v-model="gatewayAddress" placeholder="请选择网关地址" @change="handleGatewayChange" class="w-[300px]">
+          <el-option v-for="item in gatewayOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <!-- 表格 -->
@@ -117,6 +122,7 @@ import enums from '@/utils/menuCommon'
 import { useClipboard } from '@vueuse/core'
 import debounce from 'lodash/debounce'
 import { ref } from 'vue'
+import api from '@/api'
 import { useMenuList } from '@/hooks/useMenuList' // 引入useMenuList hook
 import { useExcelUpload } from '@/hooks/useExcelUpload' // 引入Excel上传hooks
 
@@ -338,4 +344,63 @@ const { fileList, uploadRef, uploadUrl, handleSuccess, handleError, beforeUpload
 })
 // 初始化加载菜单列表
 getMenuList()
+// 在script setup中添加以下代码（放在其他ref定义附近）
+const gatewayAddress = ref('')
+const gatewayOptions = ref([])
+// 网关地址查询
+const handleGatewayQuery = () => {
+  api
+    .get('/gateway/query')
+    .then((response) => {
+      console.log('网关地址查询成功:', response.data[0].value)
+      gatewayOptions.value = response.data
+
+      // 这里可以添加查询网关地址后的其他逻辑
+    })
+    .catch((error) => {
+      console.error('查询网关地址失败:', error)
+    })
+}
+handleGatewayQuery()
+// 网关地址切换
+const handleGatewayChange = (value) => {
+  api
+    .post('/gateway/change', { gatewayUrl: value })
+    .then((response) => {
+      console.log('网关地址切换成功:', response)
+      // 这里可以添加切换网关后的其他逻辑
+    })
+    .catch((error) => {
+      console.error('切换网关地址失败:', error)
+    })
+  // 这里可以添加切换网关后的其他逻辑
+}
+// 新增网关地址
+const handleGatewayAdd = (label, value) => {
+  api
+    .post('/gateway/add', { gatewayName: label, gatewayUrl: value })
+    .then((response) => {
+      console.log('网关地址切换成功:', response)
+      // 这里可以添加切换网关后的其他逻辑
+    })
+    .catch((error) => {
+      console.error('切换网关地址失败:', error)
+    })
+  // 这里可以添加切换网关后的其他逻辑
+}
+// handleGatewayAdd('测试网关', 'http://localhost:8080')
+// 删除网关地址
+const handleGatewayDel = (value) => {
+  api
+    .post('/gateway/delete', { gatewayUrl: value })
+    .then((response) => {
+      console.log('网关地址切换成功:', response)
+      // 这里可以添加切换网关后的其他逻辑
+    })
+    .catch((error) => {
+      console.error('切换网关地址失败:', error)
+    })
+  // 这里可以添加切换网关后的其他逻辑
+}
+handleGatewayDel('http://localhost:8080')
 </script>

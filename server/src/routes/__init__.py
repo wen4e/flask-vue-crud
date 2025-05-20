@@ -4,3 +4,4 @@ from .chat_routes import chat_bp
 from .file_upload_routes import file_upload_bp
 from .tr_code_routes import tr_code_bp
 from .tbsp_routes import tbsp_bp
+from .gateway_routes import gateway_bp
