@@ -388,7 +388,7 @@ const handleGatewayAdd = (label, value) => {
     })
   // 这里可以添加切换网关后的其他逻辑
 }
-// handleGatewayAdd('测试网关', 'http://localhost:8080')
+handleGatewayAdd('上海农商', 'http://10.20.162.57:7650')
 // 删除网关地址
 const handleGatewayDel = (value) => {
   api

@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 from flask import Response, stream_with_context
 
 
@@ -6,7 +8,24 @@ class TbspHandler:
     """处理TBSP API请求转发的工具类"""
 
     def __init__(self):
-        self.base_url = "http://10.20.29.157:7150"
+        # 获取当前文件所在目录路径
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取src目录路径
+        src_dir = os.path.dirname(current_dir)
+        # 构建gateway.json文件的完整路径
+        self.gateway_path = os.path.join(src_dir, "data", "gateway.json")
+
+    @property
+    def base_url(self):
+        """每次访问时重新从配置文件读取基础URL"""
+        try:
+            # 读取gateway.json文件
+            with open(self.gateway_path, "r") as f:
+                gateway_config = json.load(f)
+                return gateway_config["default"]["value"]
+        except Exception:
+            # 出现异常时返回默认值
+            return "http://10.20.29.157:7150"
 
     def proxy_request(self, path, method, headers=None, params=None, data=None):
         """
@@ -22,7 +41,7 @@ class TbspHandler:
         Returns:
             代理后的响应
         """
-        # 构建目标URL
+        # 构建目标URL - 现在每次调用都会获取最新的base_url
         target_url = f"{self.base_url}/{path}" if path else self.base_url
 
         # 移除可能导致问题的请求头
