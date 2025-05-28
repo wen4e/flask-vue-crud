@@ -7,10 +7,11 @@ import string
 
 class ExcelHandler:
     ALLOWED_EXTENSIONS = {"xlsx", "xls"}
-    # 用于存储生成的JSON文件的目录
+    # 用于存储生成的JSON文件的目录 - 修改为data/api
     JSON_OUTPUT_DIR = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
         "data",
+        "api",  # 新增api子目录
     )
     DTO_COUNT = 15  # 默认生成的DTO对象数量
 
@@ -355,10 +356,11 @@ class ExcelHandler:
     def save_to_json(data, sheet_name, excel_filename_stem):
         """保存数据为JSON文件到data目录中"""
         try:
-            # target_dir = os.path.join(ExcelHandler.JSON_OUTPUT_DIR, excel_filename_stem) # 旧的路径逻辑
-            target_dir = ExcelHandler.JSON_OUTPUT_DIR  # 直接使用data目录
+            target_dir = ExcelHandler.JSON_OUTPUT_DIR  # 直接使用data/api目录
             if not os.path.exists(target_dir):
-                os.makedirs(target_dir)  # 如果data目录不存在，则创建
+                os.makedirs(
+                    target_dir, exist_ok=True
+                )  # 如果data/api目录不存在，则创建（包括父目录）
 
             # 为了避免不同Excel文件的同名sheet导致文件覆盖，
             # 建议在文件名中加入Excel文件名作为前缀。
@@ -397,8 +399,12 @@ class ExcelHandler:
                         if pd.notna(tr_name) and pd.notna(tr_code):
                             tr_data.append({"trName": tr_name, "trCode": tr_code})
 
-                # 追加保存交易信息到tr.json
-                target_dir = ExcelHandler.JSON_OUTPUT_DIR
+                # 追加保存交易信息到tr.json - 修改保存路径
+                target_dir = ExcelHandler.JSON_OUTPUT_DIR  # 使用data/api目录
+                # 确保目录存在
+                if not os.path.exists(target_dir):
+                    os.makedirs(target_dir, exist_ok=True)
+
                 json_path = os.path.join(target_dir, "tr.json")
 
                 # 如果文件存在，读取现有内容并合并
@@ -483,7 +489,8 @@ class ExcelHandler:
 class TrCodeHandler:
     def __init__(self):
         current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.file_path = os.path.join(current_dir, "data", "tr.json")
+        # 修改tr.json文件路径到data/api目录
+        self.file_path = os.path.join(current_dir, "data", "api", "tr.json")
 
     def read_tr_codes(self):
         """读取所有交易码"""
