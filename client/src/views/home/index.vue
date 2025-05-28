@@ -22,11 +22,7 @@
         <el-button type="primary" @click="copySql('MYSQL')">复制mysql</el-button>
         <el-button type="primary" @click="copySql('ORACLE')">复制oracle</el-button>
       </el-form-item>
-      <el-form-item label="接口文档">
-        <el-upload ref="uploadRef" class="upload-demo" :action="uploadUrl" :file-list="fileList" :show-file-list="false" :on-success="handleSuccess" :on-error="handleError" :before-upload="beforeUpload" :on-exceed="handleExceed" accept=".xlsx,.xls">
-          <el-button type="primary">上传Excel</el-button>
-        </el-upload>
-      </el-form-item>
+      <upload-excel @upload-success="getMenuList" />
       <gateway-selector ref="gatewaySelectorRef" :on-update="getMenuList" />
     </el-form>
 
@@ -116,12 +112,13 @@ import generatePageDialog from './components/generatePageDialog.vue'
 import { ElMessage } from 'element-plus'
 // 引入网关管理
 import GatewaySelector from './components/GatewaySelector.vue'
+// 引入Excel上传组件
+import UploadExcel from './components/UploadExcel.vue'
 import enums from '@/utils/menuCommon'
 import { useClipboard } from '@vueuse/core'
 import debounce from 'lodash/debounce'
 import { ref } from 'vue'
 import { useMenuList } from '@/hooks/useMenuList' // 引入useMenuList hook
-import { useExcelUpload } from '@/hooks/useExcelUpload' // 引入Excel上传hooks
 
 // 使用menuList hook
 const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
@@ -334,11 +331,6 @@ const handleSearch = () => {
 
 const searchEvent = debounce(handleSearch, 500)
 
-// 使用Excel上传hooks
-const { fileList, uploadRef, uploadUrl, handleSuccess, handleError, beforeUpload, handleExceed } = useExcelUpload(() => {
-  // 上传成功后的回调，比如刷新数据
-  getMenuList()
-})
 // 初始化加载菜单列表
 getMenuList()
 </script>
