@@ -2,10 +2,18 @@ import os
 import uuid
 from flask import Blueprint, jsonify, request, current_app
 from werkzeug.utils import secure_filename
-from utils.file_handler import ExcelHandler
+from utils.file_handler import ExcelHandler, TrCodeHandler
 
 # 创建 Blueprint 实例
 file_upload_bp = Blueprint("file_upload_bp", __name__)
+
+
+@file_upload_bp.route("/trCode", methods=["GET"])
+def all_trcode():
+    """获取所有交易码"""
+    tr_handler = TrCodeHandler()
+    response_object = {"status": "success", "data": tr_handler.read_tr_codes()}
+    return jsonify(response_object)
 
 
 @file_upload_bp.route("/upload/excel", methods=["POST"])

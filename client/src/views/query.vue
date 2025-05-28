@@ -51,7 +51,7 @@ const submit = async () => {
   })
   // 假设 res.data 是 "{\"output\":\"userInput\"}" 这样的字符串
   try {
-    const parsedData = JSON.parse(res.data)
+    const parsedData = JSON.parse(res.data.data)
     if (parsedData && parsedData.output) {
       result.value = parsedData.output
     } else {
