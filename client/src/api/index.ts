@@ -21,7 +21,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // 在此处理响应数据
-    return response.data
+    return response
   },
   (error) => {
     return Promise.reject(error)

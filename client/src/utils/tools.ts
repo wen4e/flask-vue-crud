@@ -36,3 +36,13 @@ export const getRandomString = (len?: number): string => {
   }
   return randomString
 }
+
+// 安全的JSON解析函数
+export const safeJsonParse = <T = any>(jsonString: string, defaultValue?: T): T | null => {
+  try {
+    return JSON.parse(jsonString)
+  } catch (error) {
+    console.warn('JSON parse error:', error)
+    return defaultValue !== undefined ? defaultValue : null
+  }
+}

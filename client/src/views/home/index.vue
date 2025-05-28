@@ -27,16 +27,7 @@
           <el-button type="primary">上传Excel</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="网关地址">
-        <el-select v-model="gatewayAddress" placeholder="请选择网关地址" @change="onGatewayChange" class="w-[300px]">
-          <el-option v-for="item in gatewayOptions" :key="item.value" :label="item.label" :value="item.value">
-            <span style="float: left">{{ item.label }}</span>
-            <span style="float: right; color: var(--el-text-color-secondary); font-size: 13px">
-              {{ item.value }}
-            </span>
-          </el-option>
-        </el-select>
-      </el-form-item>
+      <gateway-selector ref="gatewaySelectorRef" :on-update="getMenuList" />
     </el-form>
 
     <!-- 表格 -->
@@ -123,13 +114,14 @@
 <script setup lang="ts">
 import generatePageDialog from './components/generatePageDialog.vue'
 import { ElMessage } from 'element-plus'
+// 引入网关管理
+import GatewaySelector from './components/GatewaySelector.vue'
 import enums from '@/utils/menuCommon'
 import { useClipboard } from '@vueuse/core'
 import debounce from 'lodash/debounce'
 import { ref } from 'vue'
 import { useMenuList } from '@/hooks/useMenuList' // 引入useMenuList hook
 import { useExcelUpload } from '@/hooks/useExcelUpload' // 引入Excel上传hooks
-import { useGatewayManagement } from '@/hooks/useGatewayManagement'
 
 // 使用menuList hook
 const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
@@ -349,11 +341,4 @@ const { fileList, uploadRef, uploadUrl, handleSuccess, handleError, beforeUpload
 })
 // 初始化加载菜单列表
 getMenuList()
-// 使用网关管理hook
-const { gatewayAddress, gatewayOptions, handleGatewayChange, handleGatewayAdd, handleGatewayDel } = useGatewayManagement()
-
-// 处理网关切换事件，传递getMenuList作为回调
-const onGatewayChange = (value) => {
-  handleGatewayChange(value, getMenuList)
-}
 </script>
