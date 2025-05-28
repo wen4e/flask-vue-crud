@@ -18,7 +18,6 @@ from routes import (
     create_page_bp,
     chat_bp,
     file_upload_bp,
-    tr_code_bp,
     tbsp_bp,
     gateway_bp,
 )
@@ -48,7 +47,6 @@ app.register_blueprint(coze_bp)
 app.register_blueprint(create_page_bp)
 app.register_blueprint(chat_bp)
 app.register_blueprint(file_upload_bp)
-app.register_blueprint(tr_code_bp)
 app.register_blueprint(tbsp_bp)
 app.register_blueprint(gateway_bp)
 
