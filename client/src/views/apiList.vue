@@ -61,8 +61,8 @@ const handleExceed = () => {
 
 const getTrCode = async () => {
   try {
-    const res = await api.get('/flaskApi/trCode')
-    trData.value = res.data
+    const res = await api.get('/trCode')
+    trData.value = res.data.data || []
   } catch (error) {
     console.error(error)
   }

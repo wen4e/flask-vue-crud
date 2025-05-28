@@ -49,7 +49,6 @@ const submit = async () => {
     app_id: '7502253112191860774',
     parameters: { input: formData.pageName },
   })
-  // 假设 res.data 是 "{\"output\":\"userInput\"}" 这样的字符串
   try {
     const parsedData = JSON.parse(res.data.data)
     if (parsedData && parsedData.output) {
