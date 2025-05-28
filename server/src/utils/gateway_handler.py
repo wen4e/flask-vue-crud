@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 
 class GatewayHandler:
@@ -31,11 +31,6 @@ class GatewayHandler:
         except Exception:
             return False
 
-    def query_gateways(self) -> List[Dict[str, str]]:
-        """获取所有网关配置"""
-        data = self._read_gateways()
-        return data.get("list", [])
-
     def get_default_gateway(self) -> str:
         """获取默认网关配置"""
         data = self._read_gateways()
@@ -48,29 +43,6 @@ class GatewayHandler:
             return data["default"]["value"]
         # 如果没有找到默认值，返回空字符串
         return ""
-
-    def add_gateway(self, gateway: Dict[str, str]) -> bool:
-        """添加新网关配置"""
-        # 验证必要字段
-        if not gateway.get("value") or not gateway.get("label"):
-            return False
-
-        # 读取完整的配置数据
-        data = self._read_gateways()
-
-        # 确保数据中有 list 键
-        if "list" not in data:
-            data["list"] = []
-
-        # 检查是否已存在相同值的网关
-        if any(g.get("value") == gateway.get("value") for g in data["list"]):
-            return False
-
-        # 将新网关添加到列表末尾
-        data["list"].append(gateway)
-
-        # 保存完整的配置数据
-        return self._write_data(data)
 
     def set_default_gateway(self, gateway_url: str) -> bool:
         """设置默认网关"""
@@ -85,24 +57,3 @@ class GatewayHandler:
 
         # 使用新的写入方法
         return self._write_data(data)
-
-    def delete_gateway(self, value: str) -> bool:
-        """删除网关配置"""
-        # 读取完整的配置数据
-        data = self._read_gateways()
-
-        # 如果不存在list键或list为空，直接返回False
-        if "list" not in data or not data["list"]:
-            return False
-
-        # 记录原始长度
-        original_length = len(data["list"])
-
-        # 过滤掉要删除的项
-        data["list"] = [g for g in data["list"] if g.get("value") != value]
-
-        # 只有当列表长度变化时才写入数据（说明有删除操作）
-        if len(data["list"]) < original_length:
-            return self._write_data(data)
-
-        return False
