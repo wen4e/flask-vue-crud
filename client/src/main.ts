@@ -16,5 +16,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.use(ElementPlus)
 app.use(router)
+app.use(VxeUI)
+app.use(VxeUITable)
 
-app.use(VxeUI).use(VxeUITable).mount('#app')
+app.mount('#app')
