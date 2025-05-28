@@ -2,27 +2,27 @@ from flask import Blueprint, jsonify, request
 from utils.gateway_handler import GatewayHandler
 
 # 创建 Blueprint 实例
-gateway_bp = Blueprint("gateway_bp", __name__)
+gateway_bp = Blueprint("gateway_bp", __name__, url_prefix="/gateway")
 
 # 实例化处理器
 gateway_handler = GatewayHandler()
 
 
-@gateway_bp.route("/gateway/query", methods=["GET"])
+@gateway_bp.route("/query", methods=["GET"])
 def query_gateways():
     """获取所有网关配置"""
     gateways = gateway_handler.query_gateways()
     return jsonify({"success": True, "data": gateways})
 
 
-@gateway_bp.route("/gateway/defaultQuery", methods=["GET"])
+@gateway_bp.route("/defaultQuery", methods=["GET"])
 def query_default_gateway():
     """获取默认网关配置"""
     default_gateway = gateway_handler.get_default_gateway()
     return jsonify({"success": True, "data": default_gateway})
 
 
-@gateway_bp.route("/gateway/add", methods=["POST"])
+@gateway_bp.route("/add", methods=["POST"])
 def add_gateway():
     """添加新网关配置"""
     try:
@@ -59,7 +59,7 @@ def add_gateway():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-@gateway_bp.route("/gateway/change", methods=["POST"])
+@gateway_bp.route("/change", methods=["POST"])
 def change_gateway():
     """修改默认网关配置"""
     try:
@@ -88,7 +88,7 @@ def change_gateway():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-@gateway_bp.route("/gateway/delete", methods=["POST"])
+@gateway_bp.route("/delete", methods=["POST"])
 def delete_gateway():
     """删除网关配置"""
     try:
