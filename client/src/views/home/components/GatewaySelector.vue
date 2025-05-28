@@ -206,16 +206,6 @@ const initGateway = async () => {
   }
 }
 
-// 暴露给父组件的更新方法
-const update = () => {
-  initGateway()
-}
-
-// 暴露方法给父组件
-defineExpose({
-  update,
-})
-
 // 组件挂载时初始化
 onMounted(() => {
   // 调用函数并获取返回值
