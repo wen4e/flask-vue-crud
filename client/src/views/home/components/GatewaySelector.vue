@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import debounce from 'lodash/debounce'
 import { safeJsonParse } from '@/utils/tools'
 import api from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -106,8 +107,8 @@ const getDefaultGateway = async () => {
   }
 }
 
-// 处理新增网关
-const handleAddGateway = async () => {
+// 处理新增网关的原始方法
+const handleAddGatewayOriginal = async () => {
   if (!addFormRef.value) return
 
   try {
@@ -138,6 +139,11 @@ const handleAddGateway = async () => {
     console.error('表单验证失败:', error)
   }
 }
+// 使用 debounce 防抖处理
+const handleAddGateway = debounce(handleAddGatewayOriginal, 1000, {
+  leading: true, // 立即执行第一次
+  trailing: false, // 不执行延迟后的调用
+})
 
 // 处理删除网关
 const handleDeleteGateway = async (gateway: any) => {
