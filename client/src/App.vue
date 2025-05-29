@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto px-4 mt-10">
+  <div class="mx-auto px-4 mt-5">
     <RouterView />
   </div>
 </template>

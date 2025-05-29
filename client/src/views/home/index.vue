@@ -1,110 +1,108 @@
 <template>
-  <div>
-    <!-- 搜索输入框 -->
-    <el-form :inline="true" label-suffix="：">
-      <el-form-item label="搜索">
-        <el-input v-model.trim="filterName" class="w-[300px]" placeholder="菜单名称/菜单码/交易码/上级菜单编码" clearable @input="searchEvent"></el-input>
-      </el-form-item>
-      <el-form-item label="系统">
-        <el-radio-group v-model="menuScope" @change="searchTable">
-          <el-radio-button value="1001">企业端</el-radio-button>
-          <el-radio-button value="4001">银行端</el-radio-button>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="角色">
-        <el-radio-group v-model="role" @change="searchTable">
-          <el-radio-button value="ALL">全部</el-radio-button>
-          <el-radio-button value="ADMIN">管理员</el-radio-button>
-          <el-radio-button value="OPERATOR">操作员</el-radio-button>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="复制sql">
-        <el-button type="primary" @click="copySql('MYSQL')">复制mysql</el-button>
-        <el-button type="primary" @click="copySql('ORACLE')">复制oracle</el-button>
-      </el-form-item>
-      <upload-excel @upload-success="getMenuList" />
-      <gateway-selector ref="gatewaySelectorRef" :on-update="getMenuList" />
-    </el-form>
+  <!-- 搜索输入框 -->
+  <el-form :inline="true" label-suffix="：">
+    <el-form-item label="搜索">
+      <el-input v-model.trim="filterName" class="w-[300px]" placeholder="菜单名称/菜单码/交易码/上级菜单编码" clearable @input="searchEvent"></el-input>
+    </el-form-item>
+    <el-form-item label="系统">
+      <el-radio-group v-model="menuScope" @change="searchTable">
+        <el-radio-button value="1001">企业端</el-radio-button>
+        <el-radio-button value="4001">银行端</el-radio-button>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="角色">
+      <el-radio-group v-model="role" @change="searchTable">
+        <el-radio-button value="ALL">全部</el-radio-button>
+        <el-radio-button value="ADMIN">管理员</el-radio-button>
+        <el-radio-button value="OPERATOR">操作员</el-radio-button>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="复制sql">
+      <el-button type="primary" @click="copySql('MYSQL')">复制mysql</el-button>
+      <el-button type="primary" @click="copySql('ORACLE')">复制oracle</el-button>
+    </el-form-item>
+    <upload-excel @upload-success="getMenuList" />
+    <gateway-selector ref="gatewaySelectorRef" :on-update="getMenuList" />
+  </el-form>
 
-    <!-- 表格 -->
-    <vxe-table
-      ref="tableRef"
-      show-overflow
-      :height="tableHeight"
-      :column-config="{ resizable: true }"
-      :scroll-y="{ enabled: true, gt: 0 }"
-      border
-      stripe
-      :loading="loading"
-      :tree-config="{
-        transform: true,
-        rowField: 'menuCode',
-        parentField: 'uppMenuCode',
-      }"
-      :data="menuList"
-      :checkbox-config="{ labelField: 'menuName', highlight: true }"
-      :edit-config="{ trigger: 'manual', mode: 'row' }"
-    >
-      <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
-      <vxe-column field="menuCode" title="菜单码" :edit-render="{ name: 'VxeInput' }" width="auto"></vxe-column>
-      <vxe-column field="trCode" title="交易码" width="auto"></vxe-column>
-      <vxe-column field="uppMenuCode" title="上级菜单码" width="auto"></vxe-column>
-      <vxe-column field="menuLevel" title="菜单级别" width="auto"></vxe-column>
-      <vxe-column field="menuKind" title="菜单分类" width="auto" :formatter="formatterMenuKind"></vxe-column>
-      <vxe-column field="menuVerify" title="权限校验" width="auto" :formatter="formatterMenuVerify"></vxe-column>
-      <vxe-column field="menuDisplay" title="菜单显示" width="auto" :formatter="formatterMenuDisplay"></vxe-column>
-      <vxe-column field="menuChecked" title="菜单选中" width="auto" :formatter="formatterMenuChecked"></vxe-column>
-      <vxe-column field="subsystemCode" title="系统编码" width="auto"></vxe-column>
-      <vxe-column field="folderCode" title="文件夹编码" width="auto"></vxe-column>
-      <vxe-column field="isAdmin" title="管理员是否可用" width="auto" :formatter="formatterFlag"></vxe-column>
-      <vxe-column field="isOperator" title="操作员是否可用" width="auto" :formatter="formatterFlag"></vxe-column>
-      <vxe-column field="menuAttribute" title="菜单属性" width="auto" :formatter="formatterMenuAttribute"></vxe-column>
-      <vxe-column field="sortNo" title="排序编号" width="auto"></vxe-column>
-      <vxe-column field="menuType" title="菜单类型" width="auto" :formatter="formatterMenuType"></vxe-column>
-      <vxe-column field="menuHerf" title="菜单链接" width="auto"></vxe-column>
-      <vxe-column field="workflowFlag" title="审批标志" width="auto" :formatter="formatterFlag"></vxe-column>
-      <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
-      <vxe-column title="操作" width="110" fixed="right">
-        <template #default="{ row }">
-          <template v-if="hasEditStatus(row)">
-            <el-tooltip effect="dark" content="保存" placement="top">
-              <el-icon class="mr-2 cursor-pointer" @click="saveRowEvent(row)">
-                <Check />
-              </el-icon>
-            </el-tooltip>
-            <el-tooltip effect="dark" content="取消" placement="top">
-              <el-icon class="mr-2 cursor-pointer" @click="cancelRowEvent()">
-                <Close />
-              </el-icon>
-            </el-tooltip>
-          </template>
-          <template v-else>
-            <el-tooltip effect="dark" content="编辑" placement="top">
-              <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row)">
-                <Edit />
-              </el-icon>
-            </el-tooltip>
-            <el-tooltip effect="dark" content="复制" placement="top">
-              <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)">
-                <CopyDocument />
-              </el-icon>
-            </el-tooltip>
-            <el-tooltip effect="dark" content="删除" placement="top">
-              <el-icon class="mr-2 cursor-pointer" @click="delRowEvent(row)">
-                <Delete />
-              </el-icon>
-            </el-tooltip>
-            <el-tooltip effect="dark" content="生成页面" placement="top">
-              <el-icon class="cursor-pointer" @click="generatePageRowEvent(row)">
-                <Document />
-              </el-icon>
-            </el-tooltip>
-          </template>
+  <!-- 表格 -->
+  <vxe-table
+    ref="tableRef"
+    show-overflow
+    :height="tableHeight"
+    :column-config="{ resizable: true }"
+    :scroll-y="{ enabled: true, gt: 0 }"
+    border
+    stripe
+    :loading="loading"
+    :tree-config="{
+      transform: true,
+      rowField: 'menuCode',
+      parentField: 'uppMenuCode',
+    }"
+    :data="menuList"
+    :checkbox-config="{ labelField: 'menuName', highlight: true }"
+    :edit-config="{ trigger: 'manual', mode: 'row' }"
+  >
+    <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
+    <vxe-column field="menuCode" title="菜单码" :edit-render="{ name: 'VxeInput' }" width="auto"></vxe-column>
+    <vxe-column field="trCode" title="交易码" width="auto"></vxe-column>
+    <vxe-column field="uppMenuCode" title="上级菜单码" width="auto"></vxe-column>
+    <vxe-column field="menuLevel" title="菜单级别" width="auto"></vxe-column>
+    <vxe-column field="menuKind" title="菜单分类" width="auto" :formatter="formatterMenuKind"></vxe-column>
+    <vxe-column field="menuVerify" title="权限校验" width="auto" :formatter="formatterMenuVerify"></vxe-column>
+    <vxe-column field="menuDisplay" title="菜单显示" width="auto" :formatter="formatterMenuDisplay"></vxe-column>
+    <vxe-column field="menuChecked" title="菜单选中" width="auto" :formatter="formatterMenuChecked"></vxe-column>
+    <vxe-column field="subsystemCode" title="系统编码" width="auto"></vxe-column>
+    <vxe-column field="folderCode" title="文件夹编码" width="auto"></vxe-column>
+    <vxe-column field="isAdmin" title="管理员是否可用" width="auto" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="isOperator" title="操作员是否可用" width="auto" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="menuAttribute" title="菜单属性" width="auto" :formatter="formatterMenuAttribute"></vxe-column>
+    <vxe-column field="sortNo" title="排序编号" width="auto"></vxe-column>
+    <vxe-column field="menuType" title="菜单类型" width="auto" :formatter="formatterMenuType"></vxe-column>
+    <vxe-column field="menuHerf" title="菜单链接" width="auto"></vxe-column>
+    <vxe-column field="workflowFlag" title="审批标志" width="auto" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
+    <vxe-column title="操作" width="110" fixed="right">
+      <template #default="{ row }">
+        <template v-if="hasEditStatus(row)">
+          <el-tooltip effect="dark" content="保存" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="saveRowEvent(row)">
+              <Check />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="取消" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="cancelRowEvent()">
+              <Close />
+            </el-icon>
+          </el-tooltip>
         </template>
-      </vxe-column>
-    </vxe-table>
-    <generate-page-dialog ref="generatePageDialogRef" />
-  </div>
+        <template v-else>
+          <el-tooltip effect="dark" content="编辑" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row)">
+              <Edit />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="复制" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)">
+              <CopyDocument />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="删除" placement="top">
+            <el-icon class="mr-2 cursor-pointer" @click="delRowEvent(row)">
+              <Delete />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="生成页面" placement="top">
+            <el-icon class="cursor-pointer" @click="generatePageRowEvent(row)">
+              <Document />
+            </el-icon>
+          </el-tooltip>
+        </template>
+      </template>
+    </vxe-column>
+  </vxe-table>
+  <generate-page-dialog ref="generatePageDialogRef" />
 </template>
 
 <script setup lang="ts">
