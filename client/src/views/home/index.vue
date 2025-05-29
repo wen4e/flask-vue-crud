@@ -88,10 +88,13 @@
     </vxe-column>
   </vxe-table>
   <generate-page-dialog ref="generatePageDialogRef" />
+  <edit-menu-dialog ref="editMenuDialogRef" @update-success="handleEditSuccess" />
 </template>
 
 <script setup lang="ts">
 import generatePageDialog from './components/generatePageDialog.vue'
+// 引入编辑弹窗组件
+import EditMenuDialog from './components/EditMenuDialog.vue'
 // 引入网关管理
 import GatewaySelector from './components/GatewaySelector.vue'
 // 引入Excel上传组件
@@ -125,8 +128,16 @@ const getSelectEvent = () => {
 const { formatterMenuKind, formatterMenuVerify, formatterMenuDisplay, formatterMenuChecked, formatterMenuAttribute, formatterMenuType, formatterFlag } = enums
 
 // 操作栏方法
+// 编辑菜单
+const editMenuDialogRef = ref(null)
 const editRowEvent = (row) => {
-  console.log('🚀 ~ editRowEvent ~ row:', row)
+  if (editMenuDialogRef.value) {
+    editMenuDialogRef.value.show(row)
+  }
+}
+// 编辑成功回调
+const handleEditSuccess = () => {
+  getMenuList()
 }
 const copyRowEvent = (row) => {
   const $table = tableRef.value
