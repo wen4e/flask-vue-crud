@@ -7,22 +7,39 @@ const ENABLE_ENUM = {
   '0': '否',
   '1': '是',
 }
+
+const MENU_LEVEL_ENUM = {
+  '0': '0',
+  '1': '1',
+  '2': '2',
+  '3': '3',
+  '4': '4',
+  '9': '9',
+}
+
 const MENU_KIND_ENUM = {
   '0': '菜单',
   '1': '事件',
 }
+
 const MENU_VERIFY_ENUM = {
   '0': '不校验',
   '1': '校验自身',
   '2': '校验上级',
 }
+
 const MENU_DISPLAY_ENUM = {
   '0': '不显示',
   '1': '显示',
 }
+
 const MENU_CHECKED_ENUM = {
   '0': '普通',
   '1': '联动选中',
+}
+const WORKFLOW_ASSIGNEE_MODE_ENUM = {
+  '0': '自动选择',
+  '1': '弹窗选择',
 }
 const MENU_ATTRIBUTE_ENUM = {
   '00000000': '免登菜单',
@@ -60,7 +77,18 @@ const formatterFlag = ({ cellValue }: { cellValue: keyof typeof ENABLE_ENUM }): 
 }
 
 export default {
-  // 只导出格式化函数
+  // 导出枚举常量
+  MENU_LEVEL_ENUM,
+  MENU_TYPE_ENUM,
+  ENABLE_ENUM,
+  MENU_KIND_ENUM,
+  MENU_VERIFY_ENUM,
+  MENU_DISPLAY_ENUM,
+  MENU_CHECKED_ENUM,
+  MENU_ATTRIBUTE_ENUM,
+  WORKFLOW_ASSIGNEE_MODE_ENUM,
+  MENU_SCOPE_ENUM,
+  // 导出格式化函数
   formatterMenuKind,
   formatterMenuVerify,
   formatterMenuDisplay,

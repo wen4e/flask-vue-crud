@@ -88,6 +88,7 @@
     </vxe-column>
   </vxe-table>
   <generate-page-dialog ref="generatePageDialogRef" />
+  <!-- 编辑菜单 -->
   <edit-menu-dialog ref="editMenuDialogRef" @update-success="handleEditSuccess" />
 </template>
 
