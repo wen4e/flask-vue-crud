@@ -236,8 +236,7 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     submitLoading.value = true
-
-    // 这里添加实际的提交逻辑，调用tbspApi接口，接口名称为：/tool-updGlobalMenu
+    // 提交表单数据
     const response = await tbspApi.post(
       '/tool-updGlobalMenu',
       Object.assign({}, formData, {
@@ -247,11 +246,19 @@ const handleSubmit = async () => {
       })
     )
 
-    ElMessage.success('编辑成功')
-    emit('update-success')
-    handleClose()
+    // 检查响应结果
+    if (response.data && response.data.respType === 'S') {
+      ElMessage.success('编辑成功')
+      emit('update-success')
+      handleClose()
+    } else {
+      // 处理业务失败的情况
+      const errorMsg = response.data?.respMsg || '编辑失败'
+      ElMessage.error(errorMsg)
+    }
   } catch (error) {
-    console.error('表单验证失败:', error)
+    console.error('请求失败:', error)
+    ElMessage.error('网络请求失败，请稍后重试')
   } finally {
     submitLoading.value = false
   }
