@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { getRandomString } from '@/utils/tools'
+import { useLocalStorage } from '@vueuse/core'
 
 // 创建axios实例
 const tbspApi = axios.create({
-  baseURL: '/flaskApi/tbspApi', // API的基础URL
+  baseURL: '/flaskApi/tbspApi/tbsp', // API的基础URL
   timeout: 5000, // 请求超时时间
 })
 
@@ -12,10 +13,11 @@ tbspApi.interceptors.request.use(
   (config) => {
     // 生成序列号
     const serialNo = getRandomString(22)
+    const loginInfo = useLocalStorage('loginInfo', { userId: '' })
 
     // 添加公共请求头
     const commonHeaders = {
-      headUserNo: 'jres',
+      headUserNo: loginInfo.value.userId,
       headReqTime: '193246',
       headReqSerialNo: serialNo,
       headTrDate: '20250210',

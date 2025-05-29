@@ -1,17 +1,13 @@
 import { ElMessage } from 'element-plus'
-import { getRandomString } from '@/utils/tools'
 import { useLocalStorage } from '@vueuse/core'
-import { ref } from 'vue'
 import tbspApi from '@/api/tbsp'
 
 export function useLogin() {
   // 创建持久化的存储引用
   const loginInfo = useLocalStorage('loginInfo', { userId: '' })
-  const SerialNo = ref('')
 
   // 登录方法
   const login = async (callback) => {
-    SerialNo.value = getRandomString(22)
     try {
       const requestData = {
         userNo: 'jres',
@@ -24,7 +20,7 @@ export function useLogin() {
         headTrCode: 'tool',
       }
 
-      const response = await tbspApi.post('/tbsp/bank/tool/login', requestData)
+      const response = await tbspApi.post('/bank/tool/login', requestData)
 
       // 直接更新loginInfo的值
       loginInfo.value = response.data
@@ -44,15 +40,7 @@ export function useLogin() {
     }
   }
 
-  // 生成新的序列号
-  const generateSerialNo = () => {
-    SerialNo.value = getRandomString(22)
-    return SerialNo.value
-  }
-
   return {
     login,
-    loginInfo,
-    generateSerialNo,
   }
 }

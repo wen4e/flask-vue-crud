@@ -1,10 +1,10 @@
-import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { ref, nextTick } from 'vue'
-import { useLogin } from './useLogin'
+import { useLogin } from '@/hooks/useLogin'
+import tbspApi from '@/api/tbsp'
 
 export function useMenuList() {
-  const { generateSerialNo, login, loginInfo } = useLogin()
+  const { login } = useLogin()
   const loading = ref(true)
 
   let menuList = ref([])
@@ -12,21 +12,10 @@ export function useMenuList() {
 
   // 获取菜单列表
   const getMenuList = async (params, tableRef) => {
-    const SerialNo = generateSerialNo()
     loading.value = true
 
     try {
-      const response = await axios.post('/flaskApi/tbspApi/tbsp/tool-pageMenu', {
-        headUserNo: loginInfo.value.userId,
-        headTrDate: '20250210',
-        headSerialNo: SerialNo,
-        headReqDate: '20250210',
-        headReqTime: '195219',
-        headReqSerialNo: SerialNo,
-        headOrigDate: '20250210',
-        headOrigTime: '195219',
-        headOrigSerialNo: SerialNo,
-        language: '1',
+      const response = await tbspApi.post('/tool-pageMenu', {
         menuScope: params.menuScope, //"1001": "企业PC"，"1002": "企业APP"，"4001": "银行PC"
         trCode: '',
         menuCode: null,
