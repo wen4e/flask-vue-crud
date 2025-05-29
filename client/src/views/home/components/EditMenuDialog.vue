@@ -139,6 +139,7 @@
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import menuCommon from '@/utils/menuCommon'
+import tbspApi from '@/api/tbsp'
 
 const { MENU_TYPE_ENUM, MENU_LEVEL_ENUM, ENABLE_ENUM, MENU_KIND_ENUM, MENU_VERIFY_ENUM, MENU_DISPLAY_ENUM, MENU_CHECKED_ENUM, MENU_ATTRIBUTE_ENUM, MENU_SCOPE_ENUM, WORKFLOW_ASSIGNEE_MODE_ENUM } = menuCommon
 
@@ -236,8 +237,15 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitLoading.value = true
 
-    // 这里添加实际的提交逻辑，比如调用API
-    // await updateMenu(formData)
+    // 这里添加实际的提交逻辑，调用tbspApi接口，接口名称为：/tool-updGlobalMenu
+    const response = await tbspApi.post(
+      '/tool-updGlobalMenu',
+      Object.assign({}, formData, {
+        workflowFlagOps: formData.workflowFlag,
+        permWorkflowFlagOps: formData.workflowFlag,
+        permWorkflowFlag: formData.workflowFlag,
+      })
+    )
 
     ElMessage.success('编辑成功')
     emit('update-success')
