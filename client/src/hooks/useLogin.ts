@@ -1,8 +1,8 @@
-import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getRandomString } from '@/utils/tools'
 import { useLocalStorage } from '@vueuse/core'
 import { ref } from 'vue'
+import tbspApi from '@/api/tbsp'
 
 export function useLogin() {
   // 创建持久化的存储引用
@@ -14,17 +14,6 @@ export function useLogin() {
     SerialNo.value = getRandomString(22)
     try {
       const requestData = {
-        headUserNo: 'jres',
-        headTrDate: '20250210',
-        headSerialNo: SerialNo.value,
-        headReqDate: '20250210',
-        headReqTime: '193246',
-        headReqSerialNo: SerialNo.value,
-        headOrigDate: '20250210',
-        headOrigTime: '193246',
-        headOrigSerialNo: SerialNo.value,
-        language: '1',
-        orgNo: '',
         userNo: 'jres',
         passwd: '33240f293bd2daad67ab8b1c6964b1b9',
         verificationCode: '',
@@ -35,7 +24,7 @@ export function useLogin() {
         headTrCode: 'tool',
       }
 
-      const response = await axios.post('/flaskApi/tbspApi/tbsp/bank/tool/login', requestData)
+      const response = await tbspApi.post('/tbsp/bank/tool/login', requestData)
 
       // 直接更新loginInfo的值
       loginInfo.value = response.data
