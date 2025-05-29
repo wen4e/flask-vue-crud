@@ -112,6 +112,7 @@ import { ElMessage } from 'element-plus'
 import GatewaySelector from './components/GatewaySelector.vue'
 // 引入Excel上传组件
 import UploadExcel from './components/UploadExcel.vue'
+// 菜单相关枚举和工具函数
 import enums from '@/utils/menuCommon'
 import debounce from 'lodash/debounce'
 import { ref } from 'vue'
