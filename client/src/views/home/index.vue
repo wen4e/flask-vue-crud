@@ -115,11 +115,12 @@ import UploadExcel from './components/UploadExcel.vue'
 import enums from '@/utils/menuCommon'
 import debounce from 'lodash/debounce'
 import { ref } from 'vue'
-import { useMenuList } from '@/hooks/useMenuList' // 引入useMenuList hook
-import { useCopySql } from '@/hooks/useCopySql' // 引入useCopySql hook
+import { useMenuList } from '@/hooks/useMenuList'
+import { useCopySql } from '@/hooks/useCopySql'
 
 // 使用menuList hook
 const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
+// 复制SQL的hook
 const { copySql } = useCopySql()
 // 表格相关
 const tableRef = ref()
@@ -134,28 +135,8 @@ const getSelectEvent = () => {
   return selectedRows
 }
 
-// 表格格式化函数
-const formatterMenuKind = ({ cellValue }: { cellValue: keyof typeof enums.MENU_KIND_ENUM }) => {
-  return enums.MENU_KIND_ENUM[cellValue]
-}
-const formatterMenuVerify = ({ cellValue }: { cellValue: keyof typeof enums.MENU_VERIFY_ENUM }) => {
-  return enums.MENU_VERIFY_ENUM[cellValue]
-}
-const formatterMenuDisplay = ({ cellValue }: { cellValue: keyof typeof enums.MENU_DISPLAY_ENUM }) => {
-  return enums.MENU_DISPLAY_ENUM[cellValue]
-}
-const formatterMenuChecked = ({ cellValue }: { cellValue: keyof typeof enums.MENU_CHECKED_ENUM }) => {
-  return enums.MENU_CHECKED_ENUM[cellValue]
-}
-const formatterMenuAttribute = ({ cellValue }: { cellValue: keyof typeof enums.MENU_ATTRIBUTE_ENUM }) => {
-  return enums.MENU_ATTRIBUTE_ENUM[cellValue]
-}
-const formatterMenuType = ({ cellValue }: { cellValue: keyof typeof enums.MENU_TYPE_ENUM }) => {
-  return enums.MENU_TYPE_ENUM[cellValue]
-}
-const formatterFlag = ({ cellValue }: { cellValue: keyof typeof enums.ENABLE_ENUM }): string => {
-  return enums.ENABLE_ENUM[cellValue]
-}
+// 从 enums 中解构出格式化函数
+const { formatterMenuKind, formatterMenuVerify, formatterMenuDisplay, formatterMenuChecked, formatterMenuAttribute, formatterMenuType, formatterFlag } = enums
 
 // 操作栏方法
 const hasEditStatus = (row) => {

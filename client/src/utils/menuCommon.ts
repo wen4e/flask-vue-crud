@@ -1,11 +1,3 @@
-const MENU_LEVEL_ENUM = {
-  '0': '顶层菜单',
-  '1': '一级菜单',
-  '2': '二级菜单',
-  '3': '三级菜单',
-  '4': '四级菜单',
-}
-
 const MENU_TYPE_ENUM = {
   A: '查询类',
   C: '设置类',
@@ -48,28 +40,36 @@ const MENU_SCOPE_ENUM = {
   '4001': '银行PC',
 }
 
+// 表格格式化函数
+const formatterMenuKind = ({ cellValue }: { cellValue: keyof typeof MENU_KIND_ENUM }) => {
+  return MENU_KIND_ENUM[cellValue]
+}
+const formatterMenuVerify = ({ cellValue }: { cellValue: keyof typeof MENU_VERIFY_ENUM }) => {
+  return MENU_VERIFY_ENUM[cellValue]
+}
+const formatterMenuDisplay = ({ cellValue }: { cellValue: keyof typeof MENU_DISPLAY_ENUM }) => {
+  return MENU_DISPLAY_ENUM[cellValue]
+}
+const formatterMenuChecked = ({ cellValue }: { cellValue: keyof typeof MENU_CHECKED_ENUM }) => {
+  return MENU_CHECKED_ENUM[cellValue]
+}
+const formatterMenuAttribute = ({ cellValue }: { cellValue: keyof typeof MENU_ATTRIBUTE_ENUM }) => {
+  return MENU_ATTRIBUTE_ENUM[cellValue]
+}
+const formatterMenuType = ({ cellValue }: { cellValue: keyof typeof MENU_TYPE_ENUM }) => {
+  return MENU_TYPE_ENUM[cellValue]
+}
+const formatterFlag = ({ cellValue }: { cellValue: keyof typeof ENABLE_ENUM }): string => {
+  return ENABLE_ENUM[cellValue]
+}
+
 export default {
-  MENU_LEVEL_ENUM,
-  MENU_TYPE_ENUM,
-  ENABLE_ENUM,
-  MENU_SCOPE_ENUM,
-  MENU_KIND_ENUM,
-  MENU_VERIFY_ENUM,
-  MENU_DISPLAY_ENUM,
-  MENU_CHECKED_ENUM,
-  WORKFLOW_ASSIGNEE_MODE_ENUM,
-  MENU_ATTRIBUTE_ENUM,
-}
-
-interface EnumObject {
-  [key: string]: string
-}
-
-interface KeyValue {
-  key: string
-  value: string
-}
-
-export function transferEnumObj2Arr(enumObj: EnumObject): KeyValue[] {
-  return Object.keys(enumObj).map((item) => ({ key: item, value: enumObj[item] }))
+  // 只导出格式化函数
+  formatterMenuKind,
+  formatterMenuVerify,
+  formatterMenuDisplay,
+  formatterMenuChecked,
+  formatterMenuAttribute,
+  formatterMenuType,
+  formatterFlag,
 }
