@@ -3,51 +3,17 @@ import { ElMessage } from 'element-plus'
 import { getRandomString } from '@/utils/tools'
 import { useLocalStorage } from '@vueuse/core'
 import { ref } from 'vue'
-// 在 useLogin.ts 中添加类型声明
-interface LoginInfoData {
-  userId?: string
-  // 添加其他需要的属性
-  [key: string]: any
-}
+
 export function useLogin() {
   // 创建持久化的存储引用
-  const loginInfo = useLocalStorage<LoginInfoData>('loginInfo', {})
+  const loginInfo = useLocalStorage('loginInfo', { userId: '' })
   const SerialNo = ref('')
 
   // 登录方法
-  interface LoginRequest {
-    headUserNo: string
-    headTrDate: string
-    headSerialNo: string
-    headReqDate: string
-    headReqTime: string
-    headReqSerialNo: string
-    headOrigDate: string
-    headOrigTime: string
-    headOrigSerialNo: string
-    language: string
-    orgNo: string
-    userNo: string
-    passwd: string
-    verificationCode: string
-    headChannel: string
-    headOrgNo: string
-    headCustNo: string
-    headMenuCode: string
-    headTrCode: string
-  }
-
-  interface LoginResponseData {
-    respType: string
-    [key: string]: any
-  }
-
-  type LoginCallback = () => void
-
-  const login = async (callback?: LoginCallback): Promise<void> => {
+  const login = async (callback) => {
     SerialNo.value = getRandomString(22)
     try {
-      const requestData: LoginRequest = {
+      const requestData = {
         headUserNo: 'jres',
         headTrDate: '20250210',
         headSerialNo: SerialNo.value,
@@ -69,7 +35,7 @@ export function useLogin() {
         headTrCode: 'tool',
       }
 
-      const response = await axios.post<LoginResponseData>('/flaskApi/tbspApi/tbsp/bank/tool/login', requestData)
+      const response = await axios.post('/flaskApi/tbspApi/tbsp/bank/tool/login', requestData)
 
       // 直接更新loginInfo的值
       loginInfo.value = response.data

@@ -1,42 +1,17 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { ref, nextTick, type Ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useLogin } from './useLogin'
 
 export function useMenuList() {
   const { generateSerialNo, login, loginInfo } = useLogin()
   const loading = ref(true)
-  interface MenuItem {
-    menuName: string
-    menuCode: string
-    trCode: string
-    uppMenuCode: string
-    [key: string]: any // For any other properties
-  }
 
-  let menuList = ref<MenuItem[]>([])
-  let originalMenuList: MenuItem[] = []
+  let menuList = ref([])
+  let originalMenuList = []
 
   // 获取菜单列表
-  interface MenuListParams {
-    menuScope: string
-    isAdmin: string
-    isOperator: string
-    uppMenuCode: string | null
-  }
-
-  interface TableRef {
-    getTableData: () => { tableData: any[] }
-    setTreeExpand: (nodes: any[], expanded: boolean) => Promise<void>
-  }
-
-  interface MenuListResponse {
-    success: boolean
-    data?: MenuItem[]
-    reason?: string
-  }
-
-  const getMenuList = async (params: MenuListParams, tableRef: Ref<TableRef | undefined>): Promise<MenuListResponse> => {
+  const getMenuList = async (params, tableRef) => {
     const SerialNo = generateSerialNo()
     loading.value = true
 
@@ -65,6 +40,7 @@ export function useMenuList() {
         pager: false,
         headMenuCode: 'tool-pageMenu',
       })
+
       if (response.data.respType === 'S') {
         loading.value = false
         // 将获取到的数据同时赋值给原始数据和当前显示数据
@@ -75,7 +51,6 @@ export function useMenuList() {
         if (tableRef) {
           nextTick(() => {
             if (tableRef.value) {
-              // 添加此检查
               const treeData = tableRef.value.getTableData()
               const firstLevelNodes = treeData.tableData
               tableRef.value
@@ -108,26 +83,10 @@ export function useMenuList() {
       }
     }
   }
-  /**
-   * 递归收集 menuCode
-   * @param {Array} list  菜单列表（可能包含 children）
-   * @returns {Array<string>}  所有 menuCode 的扁平数组
-   */
-  /**
-   * 递归收集 menuCode
-   * @param {Array} list  菜单列表（可能包含 children）
-   * @returns {Array<string>}  所有 menuCode 的扁平数组
-   */
-  interface MenuTreeItem extends MenuItem {
-    children?: MenuTreeItem[]
-  }
-  /**
-   * 递归收集 menuCode
-   * @param {Array} list  菜单列表（可能包含 children）
-   * @returns {Array<string>}  所有 menuCode 的扁平数组
-   */
-  const getAllMenuCodes = (list: MenuTreeItem[]): string[] => {
-    return list.reduce((codes: string[], item: MenuTreeItem) => {
+
+  // 递归收集 menuCode
+  const getAllMenuCodes = (list) => {
+    return list.reduce((codes, item) => {
       // 先把当前节点的 menuCode 加进去
       codes.push(item.menuCode)
       // 如果有 children，就递归收集
@@ -139,7 +98,7 @@ export function useMenuList() {
   }
 
   // 搜索函数：根据条件过滤菜单数据
-  const searchMenuList = (filterVal: string | null | undefined, $table?: TableRef) => {
+  const searchMenuList = (filterVal, $table) => {
     if (filterVal) {
       const tmpMenuList = originalMenuList.filter((item) => ['menuName', 'menuCode', 'trCode', 'uppMenuCode'].some((key) => item[key] && item[key].toLowerCase().includes(filterVal.toLowerCase())))
       const result = getAllMenuCodes(tmpMenuList)
