@@ -42,10 +42,9 @@
     }"
     :data="menuList"
     :checkbox-config="{ labelField: 'menuName', highlight: true }"
-    :edit-config="{ trigger: 'manual', mode: 'row' }"
   >
     <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
-    <vxe-column field="menuCode" title="菜单码" :edit-render="{ name: 'VxeInput' }" width="auto"></vxe-column>
+    <vxe-column field="menuCode" title="菜单码" width="auto"></vxe-column>
     <vxe-column field="trCode" title="交易码" width="auto"></vxe-column>
     <vxe-column field="uppMenuCode" title="上级菜单码" width="auto"></vxe-column>
     <vxe-column field="menuLevel" title="菜单级别" width="auto"></vxe-column>
@@ -65,40 +64,26 @@
     <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
     <vxe-column title="操作" width="110" fixed="right">
       <template #default="{ row }">
-        <template v-if="hasEditStatus(row)">
-          <el-tooltip effect="dark" content="保存" placement="top">
-            <el-icon class="mr-2 cursor-pointer" @click="saveRowEvent(row)">
-              <Check />
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip effect="dark" content="取消" placement="top">
-            <el-icon class="mr-2 cursor-pointer" @click="cancelRowEvent()">
-              <Close />
-            </el-icon>
-          </el-tooltip>
-        </template>
-        <template v-else>
-          <el-tooltip effect="dark" content="编辑" placement="top">
-            <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row)">
-              <Edit />
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip effect="dark" content="复制" placement="top">
-            <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)">
-              <CopyDocument />
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip effect="dark" content="删除" placement="top">
-            <el-icon class="mr-2 cursor-pointer" @click="delRowEvent(row)">
-              <Delete />
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip effect="dark" content="生成页面" placement="top">
-            <el-icon class="cursor-pointer" @click="generatePageRowEvent(row)">
-              <Document />
-            </el-icon>
-          </el-tooltip>
-        </template>
+        <el-tooltip effect="dark" content="编辑" placement="top">
+          <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row)">
+            <Edit />
+          </el-icon>
+        </el-tooltip>
+        <el-tooltip effect="dark" content="复制" placement="top">
+          <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)">
+            <CopyDocument />
+          </el-icon>
+        </el-tooltip>
+        <el-tooltip effect="dark" content="删除" placement="top">
+          <el-icon class="mr-2 cursor-pointer" @click="delRowEvent(row)">
+            <Delete />
+          </el-icon>
+        </el-tooltip>
+        <el-tooltip effect="dark" content="生成页面" placement="top">
+          <el-icon class="cursor-pointer" @click="generatePageRowEvent(row)">
+            <Document />
+          </el-icon>
+        </el-tooltip>
       </template>
     </vxe-column>
   </vxe-table>
@@ -107,7 +92,6 @@
 
 <script setup lang="ts">
 import generatePageDialog from './components/generatePageDialog.vue'
-import { ElMessage } from 'element-plus'
 // 引入网关管理
 import GatewaySelector from './components/GatewaySelector.vue'
 // 引入Excel上传组件
@@ -126,6 +110,7 @@ const { copySql } = useCopySql()
 // 表格相关
 const tableRef = ref()
 let tableHeight = ref()
+// 高度计算
 const updateTableHeight = () => {
   tableHeight.value = window.innerHeight - 120
 }
@@ -140,38 +125,8 @@ const getSelectEvent = () => {
 const { formatterMenuKind, formatterMenuVerify, formatterMenuDisplay, formatterMenuChecked, formatterMenuAttribute, formatterMenuType, formatterFlag } = enums
 
 // 操作栏方法
-const hasEditStatus = (row) => {
-  const $table = tableRef.value
-  if ($table) {
-    return $table.isEditByRow(row)
-  }
-}
 const editRowEvent = (row) => {
-  const $table = tableRef.value
-  if ($table) {
-    $table.setEditRow(row)
-  }
-}
-const saveRowEvent = (row) => {
-  const $table = tableRef.value
-  if ($table) {
-    $table.clearEdit().then(() => {
-      loading.value = true
-      setTimeout(() => {
-        loading.value = false
-        ElMessage({
-          message: 'Congrats, this is a success message.',
-          type: 'success',
-        })
-      }, 300)
-    })
-  }
-}
-const cancelRowEvent = () => {
-  const $table = tableRef.value
-  if ($table) {
-    $table.clearEdit()
-  }
+  console.log('🚀 ~ editRowEvent ~ row:', row)
 }
 const copyRowEvent = (row) => {
   const $table = tableRef.value
