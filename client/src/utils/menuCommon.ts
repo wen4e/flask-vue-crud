@@ -24,10 +24,6 @@ const MENU_CHECKED_ENUM = {
   '0': '普通',
   '1': '联动选中',
 }
-const WORKFLOW_ASSIGNEE_MODE_ENUM = {
-  '0': '自动选择',
-  '1': '弹窗选择',
-}
 const MENU_ATTRIBUTE_ENUM = {
   '00000000': '免登菜单',
   '10000000': '普通菜单',
