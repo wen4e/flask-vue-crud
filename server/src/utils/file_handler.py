@@ -213,12 +213,47 @@ class ExcelHandler:
                 continue
 
             key_name = first_cell_value
-            data_type = None
-            if len(row) > 1 and not pd.isna(row.iloc[1]):
-                data_type = str(row.iloc[1]).strip()
+
+            # 获取表格各列的值，确保有足够的列
+            row_values = [
+                str(cell).strip() if not pd.isna(cell) else "" for cell in row
+            ]
+
+            # 确保至少有9列数据（属性名、类型、说明、必输、元数据类型、最小、最大、精度、正则、备注）
+            while len(row_values) < 10:
+                row_values.append("")
+
+            data_type = row_values[1] if len(row_values) > 1 else ""
+            description = row_values[2] if len(row_values) > 2 else ""
+            required_str = row_values[3] if len(row_values) > 3 else ""
+            metadata_type = row_values[4] if len(row_values) > 4 else ""
+            min_value_str = row_values[5] if len(row_values) > 5 else "0"
+            max_value_str = row_values[6] if len(row_values) > 6 else "255"
+            precision_str = row_values[7] if len(row_values) > 7 else "0"
+            pattern = row_values[8] if len(row_values) > 8 else ""
+            remark = row_values[9] if len(row_values) > 9 else ""
 
             if not key_name or key_name in ["属性名", "类型"]:
                 continue
+
+            # 转换required为布尔值
+            required = required_str.upper() in ["Y", "TRUE", "是", "必输"]
+
+            # 转换数值字段
+            try:
+                min_value = int(min_value_str) if min_value_str.isdigit() else 0
+            except:
+                min_value = 0
+
+            try:
+                max_value = int(max_value_str) if max_value_str.isdigit() else 255
+            except:
+                max_value = 255
+
+            try:
+                precision = int(precision_str) if precision_str.isdigit() else 0
+            except:
+                precision = 0
 
             # 检查是否为List类型
             if data_type and "List<" in data_type:
@@ -240,16 +275,26 @@ class ExcelHandler:
                                 {"parent": current_dto, "field": key_name}
                             )
 
-            # 生成模拟数据
-            mock_value = ExcelHandler.generate_mock_data(data_type, key_name)
+            # 构建字段信息对象
+            field_info = {
+                "dataType": data_type,
+                "description": description,
+                "required": required,
+                "metadataType": metadata_type,
+                "minValue": min_value,
+                "maxValue": max_value,
+                "precision": precision,
+                "pattern": pattern,
+                "remark": remark,
+            }
 
             # 根据上下文添加字段
             if current_dto:
-                dto_fields[current_dto][key_name] = mock_value
+                dto_fields[current_dto][key_name] = field_info
             elif mode == "request":
-                result["requestParams"][key_name] = mock_value
+                result["requestParams"][key_name] = field_info
             elif mode == "response" and key_name not in dto_list_fields:
-                result["responseParams"][key_name] = mock_value
+                result["responseParams"][key_name] = field_info
 
         # 递归构建DTO对象的函数，增强版
         def build_dto_object(dto_type, visited=None, depth=0, parent_context=None):
