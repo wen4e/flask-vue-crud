@@ -133,7 +133,7 @@ const { formatterMenuKind, formatterMenuVerify, formatterMenuDisplay, formatterM
 const editMenuDialogRef = ref(null)
 const editRowEvent = (row) => {
   if (editMenuDialogRef.value) {
-    editMenuDialogRef.value.show(row)
+    editMenuDialogRef.value.show(row, 'edit')
   }
 }
 // 编辑成功回调

@@ -2,11 +2,11 @@
   <el-dialog v-model="dialogVisible" title="编辑菜单" width="80%" :before-close="handleClose">
     <el-form ref="formRef" :model="formData" :rules="rules" label-width="130px" label-suffix=":" class="menu-form">
       <el-form-item label="菜单ID" prop="menuId">
-        <el-input v-model="formData.menuId" placeholder="请输入菜单ID" :disabled="editType == 'modify'" />
+        <el-input v-model="formData.menuId" placeholder="请输入菜单ID" :disabled="editType == 'edit'" />
       </el-form-item>
 
       <el-form-item label="菜单码" prop="menuCode">
-        <el-input v-model="formData.menuCode" placeholder="请输入菜单码" :disabled="editType == 'modify'" />
+        <el-input v-model="formData.menuCode" placeholder="请输入菜单码" :disabled="editType == 'edit'" />
       </el-form-item>
 
       <el-form-item label="菜单名称" prop="menuName">
@@ -147,7 +147,7 @@ const { MENU_TYPE_ENUM, MENU_LEVEL_ENUM, ENABLE_ENUM, MENU_KIND_ENUM, MENU_VERIF
 const emit = defineEmits(['update-success'])
 
 // 定义编辑类型
-const editType = ref('add') // 'add' | 'modify'
+const editType = ref('add') // 'add' | 'edit'
 
 // 响应式数据
 const dialogVisible = ref(false)
@@ -229,6 +229,12 @@ const handleClose = () => {
   })
 }
 
+// 抽出API请求方法
+const submitMenuData = async (data: any) => {
+  const apiUrl = editType.value === 'add' ? '/tool-addGlobalMenu' : '/tool-updGlobalMenu'
+  return await tbspApi.post(apiUrl, data)
+}
+
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
@@ -236,24 +242,26 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     submitLoading.value = true
-    // 提交表单数据
-    const response = await tbspApi.post(
-      '/tool-updGlobalMenu',
-      Object.assign({}, formData, {
-        workflowFlagOps: formData.workflowFlag,
-        permWorkflowFlagOps: formData.workflowFlag,
-        permWorkflowFlag: formData.workflowFlag,
-      })
-    )
+
+    // 准备提交数据
+    const submitData = Object.assign({}, formData, {
+      workflowFlagOps: formData.workflowFlag,
+      permWorkflowFlagOps: formData.workflowFlag,
+      permWorkflowFlag: formData.workflowFlag,
+    })
+
+    // 调用对应的API
+    const response = await submitMenuData(submitData)
 
     // 检查响应结果
     if (response.data && response.data.respType === 'S') {
-      ElMessage.success('编辑成功')
+      const successMsg = editType.value === 'add' ? '新增成功' : '编辑成功'
+      ElMessage.success(successMsg)
       emit('update-success')
       handleClose()
     } else {
       // 处理业务失败的情况
-      const errorMsg = response.data?.respMsg || '编辑失败'
+      const errorMsg = response.data?.respMsg || (editType.value === 'add' ? '新增失败' : '编辑失败')
       ElMessage.error(errorMsg)
     }
   } catch (error) {
