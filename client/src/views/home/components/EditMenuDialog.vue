@@ -1,6 +1,10 @@
 <template>
   <el-dialog v-model="dialogVisible" title="编辑菜单" width="80%" :before-close="handleClose">
     <el-form ref="formRef" :model="formData" :rules="rules" label-width="130px" label-suffix=":" class="menu-form">
+      <el-form-item label="菜单名称" prop="menuName">
+        <el-input v-model="formData.menuName" placeholder="请输入菜单名称" />
+      </el-form-item>
+
       <el-form-item label="菜单ID" prop="menuId">
         <el-input v-model="formData.menuId" placeholder="请输入菜单ID" :disabled="editType == 'edit'" />
       </el-form-item>
@@ -9,12 +13,24 @@
         <el-input v-model="formData.menuCode" placeholder="请输入菜单码" :disabled="editType == 'edit'" />
       </el-form-item>
 
-      <el-form-item label="菜单名称" prop="menuName">
-        <el-input v-model="formData.menuName" placeholder="请输入菜单名称" />
+      <el-form-item label="交易码" prop="trCode">
+        <el-input v-model="formData.trCode" placeholder="请输入交易码" />
       </el-form-item>
 
       <el-form-item label="上级菜单编码" prop="uppMenuCode">
         <el-input v-model="formData.uppMenuCode" placeholder="请输入上级菜单编码" />
+      </el-form-item>
+
+      <el-form-item label="菜单链接" prop="menuHerf">
+        <el-input v-model="formData.menuHerf" placeholder="请输入菜单链接" />
+      </el-form-item>
+
+      <el-form-item label="系统编码" prop="subsystemCode">
+        <el-input v-model="formData.subsystemCode" placeholder="请输入系统编码" />
+      </el-form-item>
+
+      <el-form-item label="文件夹编码" prop="folderCode">
+        <el-input v-model="formData.folderCode" placeholder="请输入文件夹编码" />
       </el-form-item>
 
       <el-form-item label="菜单级别" prop="menuLevel">
@@ -29,40 +45,32 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="排序编号" prop="sortNo">
-        <el-input v-model="formData.sortNo" placeholder="请输入排序编号" />
-      </el-form-item>
-
-      <el-form-item label="页面是否缓存" prop="isKeepAlive">
-        <el-select v-model="formData.isKeepAlive" placeholder="请选择">
+      <el-form-item label="管理员是否可用" prop="isAdmin">
+        <el-select v-model="formData.isAdmin" placeholder="请选择">
           <el-option v-for="(value, key) in ENABLE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="审批标志" prop="workflowFlag">
-        <el-select v-model="formData.workflowFlag" placeholder="请选择">
+      <el-form-item label="操作员是否可用" prop="isOperator">
+        <el-select v-model="formData.isOperator" placeholder="请选择">
           <el-option v-for="(value, key) in ENABLE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="菜单链接" prop="menuHerf">
-        <el-input v-model="formData.menuHerf" placeholder="请输入菜单链接" />
-      </el-form-item>
-
-      <el-form-item label="是否使用新图标库" prop="iconFlag">
-        <el-select v-model="formData.iconFlag" placeholder="请选择">
-          <el-option v-for="(value, key) in ENABLE_ENUM" :value="key" :key="key" :label="value" />
+      <el-form-item label="菜单属性" prop="menuAttribute">
+        <el-select v-model="formData.menuAttribute" placeholder="请选择菜单属性">
+          <el-option v-for="(value, key) in MENU_ATTRIBUTE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
-      </el-form-item>
-
-      <el-form-item label="菜单图标" prop="menuIcon">
-        <el-input v-model="formData.menuIcon" placeholder="请输入菜单图标" />
       </el-form-item>
 
       <el-form-item label="菜单范围" prop="menuScope">
         <el-select v-model="formData.menuScope" placeholder="请选择菜单范围">
           <el-option v-for="(value, key) in MENU_SCOPE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
+      </el-form-item>
+
+      <el-form-item label="排序编号" prop="sortNo">
+        <el-input v-model="formData.sortNo" placeholder="请输入排序编号" />
       </el-form-item>
 
       <el-form-item label="菜单分类" prop="menuKind">
@@ -89,40 +97,32 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="交易码" prop="trCode">
-        <el-input v-model="formData.trCode" placeholder="请输入交易码" />
-      </el-form-item>
-
-      <el-form-item label="系统编码" prop="subsystemCode">
-        <el-input v-model="formData.subsystemCode" placeholder="请输入系统编码" />
-      </el-form-item>
-
-      <el-form-item label="文件夹编码" prop="folderCode">
-        <el-input v-model="formData.folderCode" placeholder="请输入文件夹编码" />
-      </el-form-item>
-
       <el-form-item label="审批候选人模式" prop="workflowAssigneeMode">
         <el-select v-model="formData.workflowAssigneeMode" placeholder="请选择">
           <el-option v-for="(value, key) in WORKFLOW_ASSIGNEE_MODE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="管理员是否可用" prop="isAdmin">
-        <el-select v-model="formData.isAdmin" placeholder="请选择">
+      <el-form-item label="页面是否缓存" prop="isKeepAlive">
+        <el-select v-model="formData.isKeepAlive" placeholder="请选择">
           <el-option v-for="(value, key) in ENABLE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="操作员是否可用" prop="isOperator">
-        <el-select v-model="formData.isOperator" placeholder="请选择">
+      <el-form-item label="审批标志" prop="workflowFlag">
+        <el-select v-model="formData.workflowFlag" placeholder="请选择">
           <el-option v-for="(value, key) in ENABLE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="菜单属性" prop="menuAttribute">
-        <el-select v-model="formData.menuAttribute" placeholder="请选择菜单属性">
-          <el-option v-for="(value, key) in MENU_ATTRIBUTE_ENUM" :value="key" :key="key" :label="value" />
+      <el-form-item label="是否使用新图标库" prop="iconFlag">
+        <el-select v-model="formData.iconFlag" placeholder="请选择">
+          <el-option v-for="(value, key) in ENABLE_ENUM" :value="key" :key="key" :label="value" />
         </el-select>
+      </el-form-item>
+
+      <el-form-item label="菜单图标" prop="menuIcon">
+        <el-input v-model="formData.menuIcon" placeholder="请输入菜单图标" />
       </el-form-item>
     </el-form>
 
@@ -215,6 +215,20 @@ const show = (rowData: any, type: EditType = 'edit') => {
       formData[key] = rowData[key]
     }
   })
+  // 根据type类型，设置默认的formData值
+  if (type === 'add' || type === 'addChild') {
+    // 公共的需要清空的字段
+    const commonClearFields = ['menuId', 'menuCode', 'menuName', 'menuHerf', 'trCode']
+    commonClearFields.forEach((field) => {
+      formData[field] = ''
+    })
+
+    // addChild 特有的逻辑
+    if (type === 'addChild') {
+      formData.uppMenuCode = rowData.menuCode || ''
+      formData.menuLevel = ''
+    }
+  }
 }
 
 // 关闭弹窗
