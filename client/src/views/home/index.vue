@@ -114,6 +114,8 @@ import { ref } from 'vue'
 import { useMenuList } from '@/composables/useMenuList'
 import { useCopySql } from '@/composables/useCopySql'
 import type { EditType } from '@/types/menu'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import tbspApi from '@/api/tbsp'
 
 // 使用menuList hook
 const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
@@ -148,13 +150,41 @@ const editRowEvent = (row, type: EditType) => {
 const handleEditSuccess = () => {
   getMenuList()
 }
+// 删除菜单
+const delRowEvent = async (row) => {
+  try {
+    // 二次确认
+    await ElMessageBox.confirm(`确定要删除菜单 "${row.menuName}" 吗？此操作不可恢复。`, '删除确认', {
+      confirmButtonText: '确定删除',
+      cancelButtonText: '取消',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger',
+    })
 
-const delRowEvent = (row) => {
-  const $table = tableRef.value
-  if ($table) {
-    $table.remove(row)
+    // 调用删除API
+    const response = await tbspApi.post('/tool-delGlobalMenu', row)
+
+    // 检查响应结果
+    if (response.data && response.data.respType === 'S') {
+      // API调用成功后，从表格中移除行
+      const $table = tableRef.value
+      if ($table) {
+        $table.remove(row)
+      }
+      ElMessage.success('删除成功')
+    } else {
+      // 处理业务失败的情况
+      const errorMsg = response.data?.respMsg || '删除失败'
+      ElMessage.error(errorMsg)
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除请求失败:', error)
+      ElMessage.error('网络请求失败，请稍后重试')
+    }
   }
 }
+
 // 生成页面
 const generatePageDialogRef = ref(null)
 const generatePageRowEvent = (row) => {
