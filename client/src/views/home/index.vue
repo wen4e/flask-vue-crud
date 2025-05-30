@@ -45,24 +45,24 @@
     :checkbox-config="{ labelField: 'menuName', highlight: true }"
   >
     <vxe-column type="checkbox" title="菜单名称" tree-node width="320" fixed="left"></vxe-column>
-    <vxe-column field="menuCode" title="菜单码" width="auto"></vxe-column>
-    <vxe-column field="uppMenuCode" title="上级菜单码" width="auto"></vxe-column>
-    <vxe-column field="trCode" title="交易码" width="auto"></vxe-column>
+    <vxe-column field="menuCode" title="菜单码" width="240"></vxe-column>
+    <vxe-column field="uppMenuCode" title="上级菜单码" width="240"></vxe-column>
+    <vxe-column field="trCode" title="交易码" width="140"></vxe-column>
     <vxe-column field="menuHerf" title="菜单链接" width="200"></vxe-column>
-    <vxe-column field="menuType" title="菜单类型" width="auto" :formatter="formatterMenuType"></vxe-column>
-    <vxe-column field="menuVerify" title="权限校验" width="auto" :formatter="formatterMenuVerify"></vxe-column>
-    <vxe-column field="menuLevel" title="菜单级别" width="auto"></vxe-column>
-    <vxe-column field="menuKind" title="菜单分类" width="auto" :formatter="formatterMenuKind"></vxe-column>
-    <vxe-column field="menuDisplay" title="菜单显示" width="auto" :formatter="formatterMenuDisplay"></vxe-column>
-    <vxe-column field="menuChecked" title="菜单选中" width="auto" :formatter="formatterMenuChecked"></vxe-column>
-    <vxe-column field="subsystemCode" title="系统编码" width="auto"></vxe-column>
-    <vxe-column field="folderCode" title="文件夹编码" width="auto"></vxe-column>
-    <vxe-column field="isAdmin" title="管理员是否可用" width="auto" :formatter="formatterFlag"></vxe-column>
-    <vxe-column field="isOperator" title="操作员是否可用" width="auto" :formatter="formatterFlag"></vxe-column>
-    <vxe-column field="menuAttribute" title="菜单属性" width="auto" :formatter="formatterMenuAttribute"></vxe-column>
-    <vxe-column field="sortNo" title="排序编号" width="auto"></vxe-column>
-    <vxe-column field="workflowFlag" title="审批标志" width="auto" :formatter="formatterFlag"></vxe-column>
-    <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="menuType" title="菜单类型" width="80" :formatter="formatterMenuType"></vxe-column>
+    <vxe-column field="menuVerify" title="权限校验" width="80" :formatter="formatterMenuVerify"></vxe-column>
+    <vxe-column field="menuLevel" title="菜单级别" width="80"></vxe-column>
+    <vxe-column field="menuKind" title="菜单分类" width="80" :formatter="formatterMenuKind"></vxe-column>
+    <vxe-column field="menuDisplay" title="菜单显示" width="80" :formatter="formatterMenuDisplay"></vxe-column>
+    <vxe-column field="menuChecked" title="菜单选中" width="80" :formatter="formatterMenuChecked"></vxe-column>
+    <vxe-column field="subsystemCode" title="系统编码" width="140"></vxe-column>
+    <vxe-column field="folderCode" title="文件夹编码" width="140"></vxe-column>
+    <vxe-column field="isAdmin" title="管理员是否可用" width="120" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="isOperator" title="操作员是否可用" width="120" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="menuAttribute" title="菜单属性" width="80" :formatter="formatterMenuAttribute"></vxe-column>
+    <vxe-column field="sortNo" title="排序编号" width="80"></vxe-column>
+    <vxe-column field="workflowFlag" title="审批标志" width="80" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="isKeepAlive" title="页面是否缓存" width="80" :formatter="formatterFlag"></vxe-column>
     <vxe-column title="操作" width="140" fixed="right">
       <template #default="{ row }">
         <el-tooltip effect="dark" content="编辑" placement="top">
