@@ -8,8 +8,8 @@
       <el-table-column prop="trName" label="交易名称" />
       <el-table-column prop="trCode" label="交易码" />
       <el-table-column label="操作">
-        <template #default>
-          <el-button link type="primary" size="small" @click="handleDetail"> 详情 </el-button>
+        <template #default="{ row }">
+          <el-button link type="primary" size="small" @click="handleDetail(row)"> 详情 </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -68,8 +68,8 @@ const getTrCode = async () => {
   }
 }
 
-const handleDetail = () => {
-  router.push({ name: 'Detail' })
+const handleDetail = (row) => {
+  router.push({ name: 'apiFileDetail', query: { trCode: row.trCode } })
 }
 
 // 生命周期钩子

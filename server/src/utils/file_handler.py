@@ -490,15 +490,37 @@ class TrCodeHandler:
     def __init__(self):
         current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         # 修改tr.json文件路径到data/api目录
-        self.file_path = os.path.join(current_dir, "data", "api", "tr.json")
+        self.api_dir = os.path.join(current_dir, "data", "api")
+        self.tr_file_path = os.path.join(self.api_dir, "tr.json")
 
     def read_tr_codes(self):
         """读取所有交易码"""
-        if not os.path.exists(self.file_path):
+        if not os.path.exists(self.tr_file_path):
             return []
 
         try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
+            with open(self.tr_file_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             return []
+
+    def read_trcode_detail(self, tr_code):
+        """根据交易码读取对应的JSON文件"""
+        if not tr_code:
+            return None
+
+        # 构建文件路径
+        json_filename = f"{tr_code}.json"
+        json_file_path = os.path.join(self.api_dir, json_filename)
+
+        # 检查文件是否存在
+        if not os.path.exists(json_file_path):
+            return None
+
+        try:
+            with open(json_file_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            # 可以记录日志
+            print(f"读取文件 {json_file_path} 时出错: {str(e)}")
+            return None

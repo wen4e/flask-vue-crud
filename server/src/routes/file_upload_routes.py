@@ -10,10 +10,30 @@ file_upload_bp = Blueprint("file_upload_bp", __name__)
 
 @file_upload_bp.route("/trCode", methods=["GET"])
 def all_trcode():
-    """获取所有交易码"""
+    """获取所有交易码或指定交易码的详细信息"""
     tr_handler = TrCodeHandler()
-    response_object = {"status": "success", "data": tr_handler.read_tr_codes()}
-    return jsonify(response_object)
+
+    # 获取查询参数
+    tr_code = request.args.get("trCode")
+
+    if tr_code:
+        # 如果传入了trCode参数，返回对应的JSON文件内容
+        tr_detail = tr_handler.read_trcode_detail(tr_code)
+
+        if tr_detail is None:
+            response_object = {
+                "status": "error",
+                "message": "未找到交易码，请上传接口文档",
+                "data": None,
+            }
+            return jsonify(response_object), 200  # 修改为200状态码
+
+        response_object = {"status": "success", "data": tr_detail}
+        return jsonify(response_object)
+    else:
+        # 如果没有传入参数，返回所有交易码列表
+        response_object = {"status": "success", "data": tr_handler.read_tr_codes()}
+        return jsonify(response_object)
 
 
 @file_upload_bp.route("/upload/excel", methods=["POST"])
