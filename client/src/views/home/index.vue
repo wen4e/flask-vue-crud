@@ -22,7 +22,7 @@
       <el-button type="primary" @click="() => copySql('ORACLE', getSelectEvent)">复制oracle</el-button>
     </el-form-item>
     <upload-excel @upload-success="getMenuList" />
-    <gateway-selector ref="gatewaySelectorRef" :on-update="getMenuList" />
+    <gateway-selector ref="gatewaySelectorRef" :on-update="handleGatewayUpdate" />
   </el-form>
 
   <!-- 表格 -->
@@ -234,6 +234,11 @@ const searchTable = () => {
   getMenuList()
 }
 
+// 处理网关选择器更新事件
+const handleGatewayUpdate = () => {
+  filterName.value = '' // 清空搜索输入框
+  getMenuList() // 调用原有的更新方法
+}
 // 搜索函数：根据 filterName 过滤菜单数据（示例中以 menuName 和 menuCode 字段作为匹配）
 const handleSearch = () => {
   const filterVal = filterName.value.trim()
