@@ -31,7 +31,7 @@
     show-overflow
     :height="tableHeight"
     :column-config="{ resizable: true }"
-    :scroll-y="{ enabled: true, gt: 0 }"
+    :scroll-y="{ enabled: true, gt: 0, rHeight: 48, oSize: 16 }"
     :row-config="{ isHover: true }"
     border
     stripe
@@ -146,6 +146,7 @@ const editRowEvent = (row, type: EditType) => {
     editMenuDialogRef.value.show(row, type)
   }
 }
+
 // 编辑成功回调
 const handleEditSuccess = () => {
   getMenuList()
