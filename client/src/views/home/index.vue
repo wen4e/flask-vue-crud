@@ -62,7 +62,7 @@
     <vxe-column field="menuAttribute" title="菜单属性" width="80" :formatter="formatterMenuAttribute"></vxe-column>
     <vxe-column field="sortNo" title="排序编号" width="80"></vxe-column>
     <vxe-column field="workflowFlag" title="审批标志" width="80" :formatter="formatterFlag"></vxe-column>
-    <vxe-column field="isKeepAlive" title="页面是否缓存" width="80" :formatter="formatterFlag"></vxe-column>
+    <vxe-column field="isKeepAlive" title="页面是否缓存" width="110" :formatter="formatterFlag"></vxe-column>
     <vxe-column title="操作" width="140" fixed="right">
       <template #default="{ row }">
         <el-tooltip effect="dark" content="编辑" placement="top">
