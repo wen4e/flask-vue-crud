@@ -24,42 +24,6 @@ class ExcelHandler:
         )
 
     @staticmethod
-    def generate_mock_data(data_type: str, key_name: str = ""):
-        """根据类型和键名生成模拟数据。"""
-        t = data_type.strip().lower()
-        if t in ("int", "integer", "number"):
-            return random.randint(0, 100)
-        if t in ("float", "double"):
-            return round(random.uniform(0, 1000), 2)
-        if t == "boolean":
-            return random.choice([True, False])
-        if t == "string":
-            if key_name.endswith(("No", "Nos")):
-                return "".join(random.choices(string.digits, k=15))
-            if key_name.endswith("Date"):
-                return "".join(random.choices(string.digits, k=8))
-            if key_name == "currency":
-                return "01"
-            if key_name == "organizationNos":
-                return "".join(random.choices(string.digits, k=4))
-            if key_name == "directAtti":
-                return random.choice(["1", "0"])
-            if key_name == "tagIds":
-                return "".join(random.choices(string.digits, k=3))
-            if key_name.endswith("Name"):
-                return "恒生电子股份有限公司"  # 示例，考虑使其可配置或更多样化
-            if key_name.endswith("count"):
-                return "".join(random.choices(string.digits, k=3))
-            if key_name.endswith(("Bal", "Amt")):
-                return "{:.2f}".format(random.uniform(0, 999.99))
-            if key_name.endswith("Num"):
-                return "".join(random.choices(string.digits, k=3))
-            if key_name == "percent":
-                return "{:.4f}".format(random.uniform(0, 1))
-            return "".join(random.choices(string.ascii_letters + string.digits, k=10))
-        return None
-
-    @staticmethod
     def process_sheet_data(df: pd.DataFrame, dto_count: int = 15) -> dict:
         """处理工作表DataFrame以提取接口参数并生成JSON模拟数据。"""
         # 提取apiName和trCode
@@ -76,11 +40,11 @@ class ExcelHandler:
             "trCode": tr_code,
             "requestParams": {},
             "responseParams": {
-                "respCode": "000000000000",
-                "respEx": None,
-                "respMsg": "交易成功",
-                "respStatus": "S",
-                "respType": "S",
+                "respCode": "",
+                "respEx": "",
+                "respMsg": "",
+                "respStatus": "",
+                "respType": "",
             },
         }
 
@@ -296,9 +260,9 @@ class ExcelHandler:
             elif mode == "response" and key_name not in dto_list_fields:
                 result["responseParams"][key_name] = field_info
 
-        # 递归构建DTO对象的函数，增强版
-        def build_dto_object(dto_type, visited=None, depth=0, parent_context=None):
-            """递归构建DTO对象，包括其中的嵌套字段"""
+        # 构建DTO结构的函数（不生成mock数据）
+        def build_dto_structure(dto_type, visited=None, depth=0):
+            """构建DTO结构，只保留字段定义，不生成mock数据"""
             if visited is None:
                 visited = set()
 
@@ -306,67 +270,49 @@ class ExcelHandler:
             if depth > 5 or dto_type in visited or dto_type not in dto_fields:
                 return {}
 
-            # 防止循环引用
             visited.add(dto_type)
+            dto_structure = {}
 
-            # 复制基本字段
-            dto_obj = dto_fields[dto_type].copy()
-
-            # 处理此DTO中的List类型字段
-            for field_name, field_value in list(dto_obj.items()):
+            # 获取DTO字段结构
+            for field_name, field_info in dto_fields[dto_type].items():
                 if field_name in dto_list_fields:
+                    # List类型字段，构建嵌套结构
                     list_item_type = dto_list_fields[field_name]
                     if list_item_type in dto_types:
-                        # 生成嵌套列表
-                        nested_items = []
-                        for _ in range(
-                            min(3, dto_count)
-                        ):  # 每个列表默认生成3个项目，不超过dto_count
-                            nested_dto = build_dto_object(
-                                list_item_type,
-                                visited.copy(),
-                                depth + 1,
-                                {"dto": dto_type, "field": field_name},
-                            )
-                            if nested_dto:  # 只添加非空对象
-                                nested_items.append(nested_dto)
-                        if nested_items:
-                            dto_obj[field_name] = nested_items
+                        nested_structure = build_dto_structure(
+                            list_item_type, visited.copy(), depth + 1
+                        )
+                        if nested_structure:
+                            dto_structure[field_name] = [nested_structure]
+                        else:
+                            dto_structure[field_name] = []
+                    else:
+                        dto_structure[field_name] = []
+                else:
+                    # 普通字段，只保留字段定义信息
+                    dto_structure[field_name] = field_info
 
-            # 特殊处理：查找该DTO类型是否有子DTO关系未在字段中体现
-            # 例如AcctBlanceBankTotalDTO应该包含dtos字段(List<DepositBalDTO>)
+            # 处理子DTO关系
             for child_dto, parent_info_list in dto_parent_fields.items():
                 for parent_info in parent_info_list:
                     if parent_info["parent"] == dto_type:
                         field_name = parent_info["field"]
-                        # 如果该字段还未被处理，添加它
-                        if field_name not in dto_obj:
-                            nested_items = []
-                            for _ in range(min(3, dto_count)):
-                                nested_dto = build_dto_object(
-                                    child_dto,
-                                    visited.copy(),
-                                    depth + 1,
-                                    {"dto": dto_type, "field": field_name},
-                                )
-                                if nested_dto:
-                                    nested_items.append(nested_dto)
-                            if nested_items:
-                                dto_obj[field_name] = nested_items
+                        if field_name not in dto_structure:
+                            nested_structure = build_dto_structure(
+                                child_dto, visited.copy(), depth + 1
+                            )
+                            if nested_structure:
+                                dto_structure[field_name] = [nested_structure]
 
-            return dto_obj
+            return dto_structure
 
-        # 第三步：构建嵌套的响应结构
+        # 第三步：构建响应结构（不使用mock数据）
         # 处理主响应结构中的dtos字段
         if "dtos" in dto_list_fields and dto_list_fields["dtos"] in dto_types:
             dto_type = dto_list_fields["dtos"]
-            dtos = []
-            for _ in range(min(dto_count, 5)):  # 限制生成数量
-                dto_obj = build_dto_object(dto_type)
-                if dto_obj:  # 只添加非空对象
-                    dtos.append(dto_obj)
-            if dtos:
-                result["responseParams"]["dtos"] = dtos
+            dto_structure = build_dto_structure(dto_type)
+            if dto_structure:
+                result["responseParams"]["dtos"] = [dto_structure]
 
         # 处理响应中的其他顶级List字段
         for field_name, list_item_type in dto_list_fields.items():
@@ -387,13 +333,9 @@ class ExcelHandler:
                 and list_item_type in dto_types
                 and field_name not in result["responseParams"]
             ):
-                items = []
-                for _ in range(min(3, dto_count)):  # 默认生成3个项目
-                    dto_item = build_dto_object(list_item_type)
-                    if dto_item:
-                        items.append(dto_item)
-                if items:
-                    result["responseParams"][field_name] = items
+                dto_structure = build_dto_structure(list_item_type)
+                if dto_structure:
+                    result["responseParams"][field_name] = [dto_structure]
 
         return result
 
