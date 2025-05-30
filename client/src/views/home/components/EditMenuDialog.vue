@@ -2,35 +2,35 @@
   <el-dialog v-model="dialogVisible" title="编辑菜单" width="80%" :before-close="handleClose">
     <el-form ref="formRef" :model="formData" :rules="rules" label-width="130px" label-suffix=":" class="menu-form">
       <el-form-item label="菜单名称" prop="menuName">
-        <el-input v-model="formData.menuName" placeholder="请输入菜单名称" />
+        <el-input v-model.trim="formData.menuName" placeholder="请输入菜单名称" />
       </el-form-item>
 
       <el-form-item label="菜单ID" prop="menuId">
-        <el-input v-model="formData.menuId" placeholder="请输入菜单ID" :disabled="editType == 'edit'" />
+        <el-input v-model.trim="formData.menuId" placeholder="请输入菜单ID" :disabled="editType == 'edit'" />
       </el-form-item>
 
       <el-form-item label="菜单码" prop="menuCode">
-        <el-input v-model="formData.menuCode" placeholder="请输入菜单码" :disabled="editType == 'edit'" />
+        <el-input v-model.trim="formData.menuCode" placeholder="请输入菜单码" :disabled="editType == 'edit'" />
       </el-form-item>
 
       <el-form-item label="交易码" prop="trCode">
-        <el-input v-model="formData.trCode" placeholder="请输入交易码" />
+        <el-input v-model.trim="formData.trCode" placeholder="请输入交易码" />
       </el-form-item>
 
       <el-form-item label="上级菜单编码" prop="uppMenuCode">
-        <el-input v-model="formData.uppMenuCode" placeholder="请输入上级菜单编码" />
+        <el-input v-model.trim="formData.uppMenuCode" placeholder="请输入上级菜单编码" />
       </el-form-item>
 
       <el-form-item label="菜单链接" prop="menuHerf">
-        <el-input v-model="formData.menuHerf" placeholder="请输入菜单链接" />
+        <el-input v-model.trim="formData.menuHerf" placeholder="请输入菜单链接" />
       </el-form-item>
 
       <el-form-item label="系统编码" prop="subsystemCode">
-        <el-input v-model="formData.subsystemCode" placeholder="请输入系统编码" />
+        <el-input v-model.trim="formData.subsystemCode" placeholder="请输入系统编码" />
       </el-form-item>
 
       <el-form-item label="文件夹编码" prop="folderCode">
-        <el-input v-model="formData.folderCode" placeholder="请输入文件夹编码" />
+        <el-input v-model.trim="formData.folderCode" placeholder="请输入文件夹编码" />
       </el-form-item>
 
       <el-form-item label="菜单级别" prop="menuLevel">
@@ -70,7 +70,7 @@
       </el-form-item>
 
       <el-form-item label="排序编号" prop="sortNo">
-        <el-input v-model="formData.sortNo" placeholder="请输入排序编号" />
+        <el-input v-model.trim="formData.sortNo" placeholder="请输入排序编号" />
       </el-form-item>
 
       <el-form-item label="菜单分类" prop="menuKind">
@@ -122,7 +122,7 @@
       </el-form-item>
 
       <el-form-item label="菜单图标" prop="menuIcon">
-        <el-input v-model="formData.menuIcon" placeholder="请输入菜单图标" />
+        <el-input v-model.trim="formData.menuIcon" placeholder="请输入菜单图标" />
       </el-form-item>
     </el-form>
 
