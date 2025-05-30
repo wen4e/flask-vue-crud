@@ -140,6 +140,7 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import menuCommon from '@/utils/menuCommon'
 import tbspApi from '@/api/tbsp'
+import type { EditType } from '@/types/menu'
 
 const { MENU_TYPE_ENUM, MENU_LEVEL_ENUM, ENABLE_ENUM, MENU_KIND_ENUM, MENU_VERIFY_ENUM, MENU_DISPLAY_ENUM, MENU_CHECKED_ENUM, MENU_ATTRIBUTE_ENUM, MENU_SCOPE_ENUM, WORKFLOW_ASSIGNEE_MODE_ENUM } = menuCommon
 
@@ -147,7 +148,7 @@ const { MENU_TYPE_ENUM, MENU_LEVEL_ENUM, ENABLE_ENUM, MENU_KIND_ENUM, MENU_VERIF
 const emit = defineEmits(['update-success'])
 
 // 定义编辑类型
-const editType = ref('add') // 'add' | 'edit'
+const editType = ref<EditType>('edit')
 
 // 响应式数据
 const dialogVisible = ref(false)
@@ -204,7 +205,7 @@ const rules = {
 }
 
 // 打开弹窗
-const show = (rowData: any, type: string = 'add') => {
+const show = (rowData: any, type: EditType = 'edit') => {
   dialogVisible.value = true
   editType.value = type
 
@@ -231,7 +232,7 @@ const handleClose = () => {
 
 // 抽出API请求方法
 const submitMenuData = async (data: any) => {
-  const apiUrl = editType.value === 'add' ? '/tool-addGlobalMenu' : '/tool-updGlobalMenu'
+  const apiUrl = editType.value === 'edit' ? '/tool-updGlobalMenu' : '/tool-addGlobalMenu'
   return await tbspApi.post(apiUrl, data)
 }
 
@@ -255,13 +256,13 @@ const handleSubmit = async () => {
 
     // 检查响应结果
     if (response.data && response.data.respType === 'S') {
-      const successMsg = editType.value === 'add' ? '新增成功' : '编辑成功'
+      const successMsg = editType.value === 'edit' ? '编辑成功' : '新增成功'
       ElMessage.success(successMsg)
       emit('update-success')
       handleClose()
     } else {
       // 处理业务失败的情况
-      const errorMsg = response.data?.respMsg || (editType.value === 'add' ? '新增失败' : '编辑失败')
+      const errorMsg = response.data?.respMsg || (editType.value === 'edit' ? '编辑失败' : '新增失败')
       ElMessage.error(errorMsg)
     }
   } catch (error) {

@@ -63,16 +63,22 @@
     <vxe-column field="sortNo" title="排序编号" width="auto"></vxe-column>
     <vxe-column field="workflowFlag" title="审批标志" width="auto" :formatter="formatterFlag"></vxe-column>
     <vxe-column field="isKeepAlive" title="页面是否缓存" width="auto" :formatter="formatterFlag"></vxe-column>
-    <vxe-column title="操作" width="110" fixed="right">
+    <vxe-column title="操作" width="140" fixed="right">
       <template #default="{ row }">
         <el-tooltip effect="dark" content="编辑" placement="top">
-          <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row)">
+          <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row, 'edit')">
             <Edit />
           </el-icon>
         </el-tooltip>
-        <el-tooltip effect="dark" content="复制" placement="top">
-          <el-icon class="mr-2 cursor-pointer" @click="copyRowEvent(row)">
-            <CopyDocument />
+        <el-tooltip effect="dark" content="新增同级菜单" placement="top">
+          <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row, 'add')">
+            <Plus />
+          </el-icon>
+        </el-tooltip>
+        <!-- 新增下级菜单 -->
+        <el-tooltip effect="dark" content="新增下级菜单" placement="top">
+          <el-icon class="mr-2 cursor-pointer" @click="editRowEvent(row, 'addChild')">
+            <Bottom />
           </el-icon>
         </el-tooltip>
         <el-tooltip effect="dark" content="删除" placement="top">
@@ -107,6 +113,7 @@ import debounce from 'lodash/debounce'
 import { ref } from 'vue'
 import { useMenuList } from '@/composables/useMenuList'
 import { useCopySql } from '@/composables/useCopySql'
+import type { EditType } from '@/types/menu'
 
 // 使用menuList hook
 const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
@@ -132,21 +139,16 @@ const { formatterMenuKind, formatterMenuVerify, formatterMenuDisplay, formatterM
 // 操作栏方法
 // 编辑菜单
 const editMenuDialogRef = ref(null)
-const editRowEvent = (row) => {
+const editRowEvent = (row, type: EditType) => {
   if (editMenuDialogRef.value) {
-    editMenuDialogRef.value.show(row, 'edit')
+    editMenuDialogRef.value.show(row, type)
   }
 }
 // 编辑成功回调
 const handleEditSuccess = () => {
   getMenuList()
 }
-const copyRowEvent = (row) => {
-  const $table = tableRef.value
-  if ($table) {
-    // 示例: 复制当前行数据处理逻辑
-  }
-}
+
 const delRowEvent = (row) => {
   const $table = tableRef.value
   if ($table) {
