@@ -13,27 +13,30 @@
     </div>
 
     <div v-else-if="trDetail" class="detail-content">
-      <el-descriptions title="接口信息" :column="2" border>
+      <el-descriptions title="接口信息">
         <el-descriptions-item label="接口名称">
-          {{ trDetail.trName }}
+          {{ trDetail.apiName }}
         </el-descriptions-item>
         <el-descriptions-item label="交易码">
           {{ trDetail.trCode }}
         </el-descriptions-item>
-        <!-- 根据实际返回的数据结构添加更多字段 -->
-        <el-descriptions-item label="创建时间" v-if="trDetail.createTime">
-          {{ trDetail.createTime }}
+      </el-descriptions>
+
+      <el-descriptions title="请求参数" style="margin-top: 20px">
+        <el-descriptions-item v-for="(value, key) in trDetail.requestParams" :key="key" :label="key">
+          {{ value }}
         </el-descriptions-item>
-        <el-descriptions-item label="更新时间" v-if="trDetail.updateTime">
-          {{ trDetail.updateTime }}
+      </el-descriptions>
+
+      <el-descriptions title="响应参数" style="margin-top: 20px">
+        <el-descriptions-item v-for="(value, key) in responseParamsWithoutDtos" :key="key" :label="key">
+          {{ value }}
         </el-descriptions-item>
-        <el-descriptions-item label="状态" v-if="trDetail.status">
-          <el-tag :type="trDetail.status === 'active' ? 'success' : 'warning'">
-            {{ trDetail.status }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="描述" v-if="trDetail.description" span="2">
-          {{ trDetail.description }}
+      </el-descriptions>
+
+      <el-descriptions v-for="(dto, index) in trDetail.responseParams.dtos" :key="index" :title="`响应数据 ${index + 1}`" style="margin-top: 20px">
+        <el-descriptions-item v-for="(value, key) in dto" :key="key" :label="key">
+          {{ value }}
         </el-descriptions-item>
       </el-descriptions>
     </div>
@@ -45,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import api from '@/api'
@@ -56,6 +59,13 @@ const route = useRoute()
 
 const loading = ref(false)
 const trDetail = ref(null)
+
+// 计算属性：获取除了dtos之外的响应参数
+const responseParamsWithoutDtos = computed(() => {
+  if (!trDetail.value?.responseParams) return {}
+  const { dtos, ...otherParams } = trDetail.value.responseParams
+  return otherParams
+})
 
 // 获取交易详情
 const getTrDetail = async (trCode: string) => {
