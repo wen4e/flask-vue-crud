@@ -1,6 +1,6 @@
 import { ElMessage } from 'element-plus'
 import { ref, nextTick } from 'vue'
-import { useLogin } from '@/hooks/useLogin'
+import { useLogin } from '@/composables/useLogin'
 import tbspApi from '@/api/tbsp'
 
 export function useMenuList() {

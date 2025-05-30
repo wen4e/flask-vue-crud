@@ -104,8 +104,8 @@ import UploadExcel from './components/UploadExcel.vue'
 import enums from '@/utils/menuCommon'
 import debounce from 'lodash/debounce'
 import { ref } from 'vue'
-import { useMenuList } from '@/hooks/useMenuList'
-import { useCopySql } from '@/hooks/useCopySql'
+import { useMenuList } from '@/composables/useMenuList'
+import { useCopySql } from '@/composables/useCopySql'
 
 // 使用menuList hook
 const { loading, menuList, getMenuList: fetchMenuList, searchMenuList } = useMenuList()
